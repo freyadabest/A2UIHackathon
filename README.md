@@ -33,6 +33,7 @@ No `GEMINI_API_KEY` handy? Set `OFFLINE=1` and the agent serves pre-baked envelo
 - Read **[HACKATHON.md](HACKATHON.md)** for your full playbook — six numbered customization seams plus an hour-by-hour template for the 5-hour window.
 - Your AI coding assistant reads **[AGENTS.md](AGENTS.md)** (also linked as `CLAUDE.md` and `GEMINI.md`) automatically. It's the cross-tool agents.md standard — Cursor, Windsurf, Codex CLI, Claude Code, Gemini CLI all pick it up natively.
 - Use the **envelope inspector** chrome to verify A2UI is actually firing — it's the right rail by default and is non-removable on purpose.
+- Need a *second visual identity* (paper, terminal, kiosk) with net-new component primitives? See **[other-examples/](other-examples/)** for the custom-catalog pattern. For just adding widgets to the dashboard, stay with the `create-a2ui-widget` skill.
 
 ## Customization seams (the 6 things you'll touch)
 

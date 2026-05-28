@@ -109,6 +109,22 @@
   max-width: 680px;
 }
 
+/* ── Mobile (< 1024px) — plan §8.3 ────────────────────────────────
+   Below the breakpoint, the reading column drops its max-width and uses
+   the full surface with comfortable padding. The Verdict stays full-width
+   (no rule needed — it has no max-width). The clause grid already collapses
+   to a single column above (default 1fr), which stacks margin notes inline
+   below their clause main column. */
+@media (max-width: 1023px) {
+  [data-catalog-style="legal-paper"] .lp-shell {
+    padding: 24px 20px;
+  }
+  [data-catalog-style="legal-paper"] .lp-body {
+    max-width: 100%;
+    padding: 0 20px;
+  }
+}
+
 /* ── Verdict ──────────────────────────────────────────────────── */
 [data-catalog-style="legal-paper"] .lp-verdict {
   border-left: 4px solid var(--verdict-neutral);
@@ -199,6 +215,18 @@
 [data-catalog-style="legal-paper"] .lp-clause-margin {
   /* The aside slot — only visible on ≥1024px via the grid; below that it
      stacks under the clause main column. */
+
+  /* Copy-paste behavior — plan §8.5
+     The margin column is annotations *about* the contract, not part of the
+     contract text. Suppress selection at the column level so a "select-all
+     and paste into a doc" gesture grabs the contract body cleanly. The
+     .lp-margin-note override below re-enables selection if a user deliberately
+     drags inside a single note. */
+  user-select: none;
+}
+
+[data-catalog-style="legal-paper"] .lp-margin-note {
+  user-select: text;
 }
 
 /* ── Redline ──────────────────────────────────────────────────── */

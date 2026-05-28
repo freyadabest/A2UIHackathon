@@ -211,11 +211,11 @@ export const legalPaperCatalogRenderers: CatalogRenderers<LegalPaperCatalogDefin
             {rationale ? ` ${rationale}.` : ""}
           </span>
 
-          <div aria-hidden={false}>
+          <div aria-hidden="true">
             {!isAccepted && (
               <>
                 <span className="lp-redline-original">{original}</span>{" "}
-                <span aria-hidden="true">→</span>{" "}
+                <span>→</span>{" "}
               </>
             )}
             <span className="lp-redline-suggested">{suggested}</span>

@@ -55,6 +55,10 @@ Portable inside this starter; portable across repos with documented surgery.
 
 **Demo only — not legal advice.** Fictional parties, fictional contracts, fictional flagged clauses. Do not use the output of this example to evaluate a real agreement.
 
+## A note on dark mode
+
+This example uses a fixed light theme for the document surface; the rest of the app honors your dark-mode preference. The warm off-white paper is load-bearing for the "printed contract" affordance, so the paper catalog scopes `color-scheme: light` under `[data-catalog-style="legal-paper"]` (see `catalog/theme.css`). Toggle the global theme freely — only the paper surface stays light.
+
 ---
 
 ## Layout
@@ -75,4 +79,8 @@ See plan §3 for the full layout convention. The Next.js route lives at `src/app
 
 ## Build engineer retro
 
-_To be filled at end of build — what broke, what to know._
+_Honest version. Read [FRICTION.md](./FRICTION.md) for the full log._
+
+Building this through the documented hackathon paths only — `pnpm new-widget`, the `create-a2ui-widget` skill, `AGENTS.md`, in-tree READMEs — surfaced more rough edges than the dashboard demo does. Three rows became filed P0 issues on day one: `pnpm validate-widget` rejected the shipped `flight_card.json` ([#2](https://github.com/jerelvelarde/london-a2ui-a2a-starter/issues/2)), `pnpm test:widgets` came up red against the shipped fixtures ([#3](https://github.com/jerelvelarde/london-a2ui-a2a-starter/issues/3)), and the plan's langgraph multi-graph fix was incomplete under the path-based loader, requiring sys.path injection with absolute imports ([#4](https://github.com/jerelvelarde/london-a2ui-a2a-starter/issues/4)). Every single blitz agent — seven for seven — hit `lefthook: Can't find lefthook in PATH` on commits from worktrees ([#5](https://github.com/jerelvelarde/london-a2ui-a2a-starter/issues/5)).
+
+What I'd want you to know: there's no `pnpm new-example` generator yet (FRICTION P2), `tsc` and `dev:ui` don't work cleanly from worktrees (FRICTION P2), and three incompatible "fixture" shapes coexist in the starter (FRICTION P1) — the validator's `{components, data}` shape is the authoritative one when in doubt. The heavy catalog slot (973 LOC, four files) hit context exhaustion mid-flight and needed a finalize subagent (FRICTION P1) — decompose multi-file builds and write the cheapest aggregator first. The validator's "canonical example" error message points at a Python file instead of a JSON template (FRICTION P1) — open the schema JSON, not the `.py`. Build straight ahead, log the friction, file the issues; that *is* the contribution.
