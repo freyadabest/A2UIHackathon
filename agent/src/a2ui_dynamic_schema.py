@@ -36,7 +36,7 @@ from typing import Any
 from langchain.tools import tool, ToolRuntime
 from langchain_core.messages import SystemMessage
 from langchain_core.tools import tool as lc_tool
-from langchain_openai import ChatOpenAI
+from langchain_google_genai import ChatGoogleGenerativeAI
 
 from copilotkit import a2ui
 
@@ -93,13 +93,12 @@ def generate_a2ui(runtime: ToolRuntime[Any]) -> str:
 
     # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
     # Secondary LLM — designs the A2UI schema for dynamic surfaces.
-    # Reads the same MODEL / MODEL_BASE_URL / GEMINI_API_KEY env as the
-    # primary agent (agent/main.py). Keep the two providers in sync.
+    # Reads the same MODEL / GEMINI_API_KEY env as the primary agent
+    # (agent/main.py). Keep the two providers in sync.
     # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-    model = ChatOpenAI(
-        model=os.getenv("MODEL", "gemini-2.5-flash"),
-        api_key=os.getenv("GEMINI_API_KEY"),
-        base_url=os.getenv("MODEL_BASE_URL", "https://generativelanguage.googleapis.com/v1beta/openai/"),
+    model = ChatGoogleGenerativeAI(
+        model=os.getenv("MODEL", "gemini-3.5-flash"),
+        google_api_key=os.getenv("GEMINI_API_KEY"),
     )
     model_with_tool = model.bind_tools(
         [render_a2ui],

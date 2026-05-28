@@ -16,63 +16,72 @@ a Google or upstream change is caught before event day.
 | Field | Value |
 |---|---|
 | Provider | Google Gemini |
-| Endpoint | `https://generativelanguage.googleapis.com/v1beta/openai/` |
-| Model ID | **`gemini-2.5-flash`** |
+| SDK | `langchain-google-genai==4.2.4` (native Google Gen AI) |
+| Model ID | **`gemini-3.5-flash`** |
 | Env var | `GEMINI_API_KEY` |
 | Free-tier key | https://aistudio.google.com/apikey |
-| Verified via | `scripts/probe-gemini.sh` on 2026-05-28 |
-| Probe result | HTTP 200 + tool_calls confirmed, 1704ms |
-| Multi-turn verified | Yes — survives `user → assistant(tool_call) → tool → assistant(reply)` cleanly |
+| Verified | 2026-05-28 — UI→agent→Gemini with flat-shape frontend tools, `search_flights` fired, `createSurface` envelope returned |
+| Multi-turn | Yes — native SDK handles `thought_signature` replay correctly across tool turns |
 
-### Why this default (and why NOT 3.5 Flash)
+### Why this default
 
-`gemini-3.5-flash` is the **current** Google Flash model (released 2026-05-19,
-beats 3.1 Pro on agentic benchmarks at Flash pricing, 1M context). It is the
-model we'd ship if we could. We can't, because of a client-side compatibility
-issue, not because 2.5 is preferable.
+`gemini-3.5-flash` is the current Google Flash model (released 2026-05-19) —
+beats 3.1 Pro on agentic benchmarks at Flash pricing, 1M context, 4× speed.
 
-The actual reasoning, in order of importance:
+1. **Agentic-tuned.** Google positions Gemini Flash as the agentic flagship.
+2. **Sponsor alignment.** Google is the venue + platform sponsor.
+3. **Free tier.** No credit card required.
+4. **Multi-turn safe** with `langchain-google-genai`'s native SDK (handles
+   `thought_signature` replay; see history below).
+5. **Tool shape clean.** Native SDK converts frontend-tool flat-shape entries
+   correctly, no shim required (though `NormalizeToolShapeMiddleware`
+   stays in place as belt-and-suspenders for future client swaps).
 
-1. **Multi-turn compatible with `langchain-openai 1.1.9`.** This is load-
-   bearing. See "The Gemini 3.5 Flash trap" below.
-2. **Agentic-tuned.** Google positions Gemini Flash as the agentic flagship.
-3. **Sponsor alignment.** Google is the venue + platform sponsor.
-4. **Free tier.** No credit card required.
-5. **Zero code rewrite.** OpenAI-compat endpoint works with existing `ChatOpenAI`.
+### History: how we landed on the native SDK
 
-#### The Gemini 3.5 Flash trap
+The base starter used `langchain-openai` against Gemini's OpenAI-compatibility
+endpoint. Two issues surfaced through running the actual UI:
 
-`gemini-3.5-flash` 200s on a single-turn tool-calling probe but **400s on the
-follow-up turn** with:
+1. **`gemini-3.5-flash` 400s on multi-turn tool calls via OpenAI-compat:**
 
+   ```
+   Function call is missing a thought_signature in functionCall parts.
+   This is required for tools to work correctly … Please refer to
+   https://ai.google.dev/gemini-api/docs/thought-signatures
+   ```
+
+   `langchain-openai 1.1.9` strips Gemini's thought-metadata. `reasoning_effort:
+   "none"` does not disable the requirement. We confirmed this twice (initial
+   probe + re-probe on 2026-05-28).
+
+2. **Frontend tool shape mismatch:** CopilotKit V2's `useFrontendTool()`
+   registers tools with a flat `{name, description, parameters}` shape that
+   Gemini's OpenAI-compat parser strict-rejects. OpenAI tolerates it; Gemini
+   does not. We fixed this with `agent/src/middleware/normalize_tools.py`
+   (see commit `7c58287`).
+
+Switching the primary and secondary LLM to `langchain-google-genai` (the native
+Google Gen AI SDK, `ChatGoogleGenerativeAI`) resolves (1) entirely and gives
+us cleaner handling of (2) as a side-effect.
+
+### Alternative — fall back to OpenAI-compat + `gemini-2.5-flash`
+
+The OpenAI-compat code path stayed working with `gemini-2.5-flash`. If
+`langchain-google-genai` ever breaks in a way that's worse than the OpenAI-
+compat trap, swap back to:
+
+```python
+from langchain_openai import ChatOpenAI
+model = ChatOpenAI(
+    model="gemini-2.5-flash",
+    api_key=os.getenv("GEMINI_API_KEY"),
+    base_url="https://generativelanguage.googleapis.com/v1beta/openai/",
+    model_kwargs={"parallel_tool_calls": False},
+)
 ```
-Function call is missing a thought_signature in functionCall parts.
-This is required for tools to work correctly … Please refer to
-https://ai.google.dev/gemini-api/docs/thought-signatures
-```
 
-Gemini 3.x emits "thought signatures" with every tool call and requires the
-client to replay them on subsequent turns. `langchain-openai 1.1.9` does not
-implement this — it strips thought metadata. `reasoning_effort: "none"` does
-NOT disable the requirement. Re-confirmed by re-probing on 2026-05-28 after
-the initial fork-date probe.
-
-**Upgrade paths to 3.5 Flash (priority order):**
-
-1. **Switch primary LLM to `langchain-google-genai` (native Gemini SDK).**
-   The native SDK handles thought_signature replay correctly. ~5-line swap
-   in `agent/main.py` and `agent/src/a2ui_dynamic_schema.py`. Adds a new
-   dep and a different `model_kwargs` surface. This is the only available
-   path *today*.
-2. **Wait for `langchain-openai` (or any OpenAI-compatible client) to ship
-   thought_signature passthrough.** Then we keep the OpenAI-compat code
-   path. The nightly CI probe (see `.github/workflows/nightly-gemini-probe.yml`)
-   catches this the day it lands.
-
-The `gemini-2.5-flash` default is the safest choice for the 5-hour build
-window — it's the latest model that "just works" with the inherited
-`langchain-openai` code path. Teams that want 3.5 Flash today can apply
-path (1) themselves following the same pattern.
+This was the default from 2026-05-28 morning through ~22:50 UTC. The
+`NormalizeToolShapeMiddleware` is required on this path; keep it.
 
 ### Models that 404'd in the probe (do not use)
 

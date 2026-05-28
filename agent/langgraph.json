@@ -1,11 +1,11 @@
 {
   "python_version": "3.12",
   "dockerfile_lines": [],
-  "dependencies": [".", "../other-examples/legal-contract-review/agent"],
+  "dependencies": ["."],
   "package_manager": "uv",
   "graphs": {
-    "sample_agent": "./main.py:graph",
-    "legal_review_agent": "../other-examples/legal-contract-review/agent/graph.py:graph"
+    "sample_agent": "./main.py:graph"
   },
-  "env": "../.env"
+  "env": "../.env",
+  "_note": "legal_review_agent registration removed pending multi-graph layout fix (see ROADMAP). It referenced ../other-examples/legal-contract-review/agent which langgraph-cli rejects as a non-subdirectory local dependency. To restore: either (a) move this config to project root + ensure Python 3.12 across both subpkgs, or (b) run a second langgraph dev server on a different port for the legal agent."
 }
