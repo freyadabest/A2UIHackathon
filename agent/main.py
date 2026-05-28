@@ -19,7 +19,11 @@ from src.a2ui_fixed_schema import search_flights
 from langchain_openai import ChatOpenAI
 
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-# CUSTOMIZATION SEAM — LLM provider
+# CUSTOMIZATION SEAM ⊥ — LLM provider (FROZEN — do NOT change without instruction)
+# See HACKATHON.md "If you get rate-limited" for the runbook.
+# Pattern to copy: this block IS the canonical example; for provider swaps
+# (OpenAI / Anthropic / LiteLLM) see .env.example.
+#
 # Default: Gemini 2.5 Flash via Google's OpenAI-compatible endpoint.
 # Why 2.5 (not 3.5): Gemini 3.x requires thought_signature replay across
 # tool turns (https://ai.google.dev/gemini-api/docs/thought-signatures);
@@ -27,7 +31,6 @@ from langchain_openai import ChatOpenAI
 # the first tool call. 2.5 Flash has no such requirement.
 # Model ID empirically verified 2026-05-28 via scripts/probe-gemini.sh.
 # See FROZEN.md for the full probe results and the 3.x upgrade path.
-# To swap providers (OpenAI / Anthropic / LiteLLM): see .env.example.
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 model = ChatOpenAI(
     model=os.getenv("MODEL", "gemini-2.5-flash"),
@@ -35,6 +38,21 @@ model = ChatOpenAI(
     base_url=os.getenv("MODEL_BASE_URL", "https://generativelanguage.googleapis.com/v1beta/openai/"),
     model_kwargs={"parallel_tool_calls": False},
 )
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# END CUSTOMIZATION SEAM ⊥ (LLM provider)
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# CUSTOMIZATION SEAM #5 — Switch domain (DOMAIN env)
+# See HACKATHON.md §5 for the full recipe.
+# Pattern to copy: agent/src/domains/shopping/ (canonical stub, landed by E)
+#
+# Set DOMAIN=<name> in .env to swap the whole data+prompt bundle. When E
+# lands the domain loader, this is where the domain dispatch happens.
+# Today (pre-E), the inherited default demo (todos + dashboards + flights)
+# is hard-wired; the DOMAIN env is read but not yet routed.
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+DOMAIN = os.getenv("DOMAIN", "default")
 
 agent = create_agent(
     model=model,

@@ -2,6 +2,11 @@
 Fixed-schema A2UI tool: flight search results.
 
 Schema is loaded from a JSON file. Only the data changes per invocation.
+
+This file is the CANONICAL EXAMPLE for fixed-schema A2UI widgets.
+When the hacker (or their AI assistant) wants to add a new widget,
+copy `search_flights` below and adapt. See HACKATHON.md §4 for the
+full 5-surface dance.
 """
 
 from __future__ import annotations
@@ -11,6 +16,23 @@ from typing import TypedDict
 
 from copilotkit import a2ui
 from langchain.tools import tool
+
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# CUSTOMIZATION SEAM #4 — Add an A2UI widget (fixed schema)
+# See HACKATHON.md §4 for the full recipe.
+# Pattern to copy: search_flights (below) — it is THE canonical example.
+#
+# The 5-surface dance (skip a step → widget won't render):
+#   1. Catalog entry — agent/src/widgets/<name>.json
+#   2. Fixture       — agent/src/widgets/<name>.fixture.json
+#   3. Python tool   — this file (a new @tool below) + register in
+#                      agent/main.py's tools=[...]
+#   4. TS schema     — src/app/api/copilotkit/route.ts a2ui.schema array
+#   5. Prompt hint   — agent/main.py system_prompt (teach the agent WHEN)
+#
+# After editing: pnpm validate-widget agent/src/widgets/<name>.json
+# Then: pnpm smoke
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 CATALOG_ID = "copilotkit://app-dashboard-catalog"
 SURFACE_ID = "flight-search-results"

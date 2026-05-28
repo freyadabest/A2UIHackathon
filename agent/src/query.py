@@ -2,6 +2,20 @@ from langchain.tools import tool
 from pathlib import Path
 import csv
 
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# CUSTOMIZATION SEAM #3 — Swap demo data
+# See HACKATHON.md §3 for the full recipe.
+# Pattern to copy: this file (query_data + db.csv).
+#
+# Two ways to swap:
+#   (a) Replace db.csv with your own rows — keeps the same code path.
+#   (b) Replace this whole file with a Python literal / API call /
+#       SQL connector. Update the docstring on query_data so the
+#       agent knows when to call it with your domain's language.
+# After swapping, edit the system prompt in agent/main.py so the agent
+# is grounded in your domain.
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
 # Read data at module load time to avoid file I/O issues in
 # LangGraph Cloud's sandboxed tool execution environment.
 _csv_path = Path(__file__).parent / "db.csv"

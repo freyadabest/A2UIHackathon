@@ -1,3 +1,13 @@
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   CUSTOMIZATION SEAM #1 — Re-theme (CSS variables)
+   See HACKATHON.md §1 for the full recipe.
+   Pattern to copy: this file — replace the --p-* (primary),
+   --s-* (secondary), --t-* (tertiary), and --primary / background
+   values to match your brand. Tailwind 4 picks up the variables
+   automatically — no rebuild needed. If layout breaks, run
+   `pnpm theme:reset` to revert.
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
 :root {
   --n-100: #ffffff;
   --n-99: #fcfcfc;

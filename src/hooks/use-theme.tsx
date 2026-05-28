@@ -1,5 +1,14 @@
 "use client";
 
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// CUSTOMIZATION SEAM #1 — Re-theme (dark/light/system toggle)
+// See HACKATHON.md §1 for the full recipe.
+// Pattern to copy: this file pairs with src/lib/a2ui-theme.css.
+// Edit the CSS variables there to change the brand palette; edit
+// the toggle logic here only if you need a different theme model
+// (e.g. force-light-only, multi-theme picker).
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
 import { createContext, useContext, useEffect, useState } from "react";
 
 type Theme = "dark" | "light" | "system";

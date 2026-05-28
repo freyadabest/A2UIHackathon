@@ -4,7 +4,28 @@ Dynamic A2UI tool: LLM-generated UI from conversation context.
 A secondary LLM generates v0.9 A2UI components via a structured tool call.
 The generate_a2ui tool wraps the output as a2ui_operations, which the
 middleware detects in the TOOL_CALL_RESULT and renders automatically.
+
+This file is the CANONICAL EXAMPLE for dynamic-schema A2UI. The fixed-schema
+counterpart (a2ui_fixed_schema.py) is the preferred path for demo
+predictability — use this dynamic path when you want the LLM to design ad-hoc
+UI on the fly and you're willing to accept the unpredictability. See
+HACKATHON.md §4 ("Faster alternative — dynamic schema") for the trade-offs.
+
+Tweak the produced schemas in the A2UI Composer:
+  https://a2ui-composer.ag-ui.com/
 """
+
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# CANONICAL EXAMPLE — Dynamic-schema A2UI
+# See HACKATHON.md §4 for the recipe.
+# Pattern to copy: generate_a2ui (below) — secondary LLM designs the
+# schema; this tool returns a2ui.render(operations=[...]) for the
+# middleware to detect and dispatch.
+#
+# Prefer the fixed-schema path (agent/src/a2ui_fixed_schema.py:search_flights)
+# for anything you'll demo in front of judges. Use this dynamic path for
+# exploratory builds where you don't yet know the widget shape.
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 from __future__ import annotations
 
