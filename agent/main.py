@@ -10,6 +10,7 @@ from langchain.agents import create_agent
 
 # State schema is domain-agnostic; tools are loaded per-domain below.
 from src.todos import AgentState
+from src.middleware.normalize_tools import NormalizeToolShapeMiddleware
 
 from langchain_openai import ChatOpenAI
 
@@ -71,6 +72,9 @@ agent = create_agent(
         StateStreamingMiddleware(
             StateItem(state_key="todos", tool="manage_todos", tool_argument="todos")
         ),
+        # Last so it sees the merged tools after CopilotKitMiddleware injects
+        # frontend tools — reshapes them to strict OpenAI form for Gemini.
+        NormalizeToolShapeMiddleware(),
     ],
     state_schema=AgentState,
     system_prompt=_system_prompt,
