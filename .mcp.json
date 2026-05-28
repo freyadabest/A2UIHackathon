@@ -1,0 +1,19 @@
+{
+  "$schema-note": "Suggested MCP servers for the CopilotKit A2UI hackathon starter. Hackers can opt-in by enabling these in their MCP-capable client (Claude Code, Cursor, etc.). The CopilotKit docs server gives AI assistants live access to the canonical documentation so they don't hallucinate APIs or version-specific behavior. Update server entries as canonical MCP servers ship.",
+  "mcpServers": {
+    "copilotkit-docs": {
+      "$comment": "TODO: replace with the canonical CopilotKit docs MCP server once published. Until then, point at the public docs search via a generic HTTP fetch MCP or use the in-IDE docs lookup. Search: 'CopilotKit docs MCP server' on https://github.com/CopilotKit and https://docs.copilotkit.ai.",
+      "type": "http",
+      "url": "https://docs.copilotkit.ai/mcp",
+      "description": "Live search over CopilotKit + A2UI v0.9 documentation. Replaces hallucinated APIs with grounded answers.",
+      "disabled": true
+    },
+    "a2ui-spec": {
+      "$comment": "Optional: A2UI v0.9 specification reference. Useful when authoring custom catalogs or debugging envelope shape errors. If a canonical server doesn't exist, leave disabled and reference https://a2ui.org/specification/v0.9-a2ui/ manually.",
+      "type": "http",
+      "url": "https://a2ui.org/mcp",
+      "description": "A2UI v0.9 specification lookup.",
+      "disabled": true
+    }
+  }
+}

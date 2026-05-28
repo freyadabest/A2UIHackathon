@@ -1,0 +1,52 @@
+{
+  "//": "CopilotKit A2UI hackathon starter — workspace VS Code settings. See AGENTS.md for the seam map and hard rules. CopilotKit A2UI catalog preview extension settings are namespaced under 'copilotkit.*' once the extension is installed; settings below are scoped defaults that work without the extension.",
+  "editor.tabSize": 2,
+  "editor.insertSpaces": true,
+  "editor.formatOnSave": false,
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "never"
+  },
+  "files.eol": "\n",
+  "files.insertFinalNewline": true,
+  "files.trimTrailingWhitespace": true,
+  "files.associations": {
+    "*.fixture.json": "json",
+    "AGENTS.md": "markdown",
+    "CLAUDE.md": "markdown",
+    "GEMINI.md": "markdown"
+  },
+  "json.schemaDownload.enable": true,
+  "[python]": {
+    "editor.tabSize": 4,
+    "editor.defaultFormatter": "ms-python.python"
+  },
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[typescriptreact]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[json]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[markdown]": {
+    "editor.wordWrap": "on"
+  },
+  "python.analysis.typeCheckingMode": "basic",
+  "python.defaultInterpreterPath": "./agent/.venv/bin/python",
+  "search.exclude": {
+    "**/.next/**": true,
+    "**/node_modules/**": true,
+    "**/.venv/**": true,
+    "**/dist/**": true,
+    "**/build/**": true,
+    "**/vendor/**": true,
+    "**/.langgraph_api/**": true
+  },
+  "copilotkit.a2ui.catalogPath": "agent/src/widgets",
+  "copilotkit.a2ui.fixtureSuffix": ".fixture.json",
+  "copilotkit.a2ui.schemaVersion": "0.9"
+}
