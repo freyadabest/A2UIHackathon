@@ -7,7 +7,7 @@ hood and watches for hot reloads).
 
 | Path | Purpose |
 |---|---|
-| `main.py` | Entry point. Wires `ChatOpenAI` (Gemini 2.5 Flash by default) + tools + middleware + system prompt. |
+| `main.py` | Entry point. Wires `ChatGoogleGenerativeAI` (Gemini 3.5 Flash by default) + tools + middleware + system prompt. |
 | `src/` | All tool source. See `src/README.md`. |
 | `pyproject.toml` | Pinned Python deps (see `../FROZEN.md`). |
 | `uv.lock` | Committed lockfile — authoritative for Python deps. |
@@ -34,9 +34,11 @@ uv run --reload langgraph dev
 
 ## What you probably should NOT touch
 
-- The `ChatOpenAI(...)` block in `main.py` — the model ID and base URL
-  are FROZEN. See `../FROZEN.md` § LLM provider and the inline anchor
-  comment for the full story (including why NOT Gemini 3.5 Flash).
+- The `ChatGoogleGenerativeAI(...)` block in `main.py` — the model ID is
+  FROZEN. See `../FROZEN.md` § LLM provider and the inline anchor comment
+  for the full story (including why the native Google Gen AI SDK is
+  required for Gemini 3.x instead of `langchain-openai`'s OpenAI-compat
+  path).
 - `pyproject.toml` versions — pinned. Pre-commit hook will reject drift.
 
 See `../AGENTS.md` and `../HACKATHON.md` for recipes.

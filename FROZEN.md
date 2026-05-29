@@ -102,9 +102,9 @@ with a single API key. Tool see `scripts/load-test-gemini.py`.
 
 Single-key cliff is well above 100 concurrent agentic tool-calling requests.
 At London-hackathon scale (~30 teams × per-team API keys + a small mentor
-fallback pool), this is comfortable headroom. PLAN.md's three rate-limit
-mitigations (per-team keys via prereq email, mentor fallback pool, `OFFLINE=1`
-insurance) are sufficient; we do NOT need to ship a shared key.
+fallback pool), this is comfortable headroom. Three rate-limit mitigations
+(per-team keys via prereq email, mentor fallback pool, `OFFLINE=1` insurance)
+are sufficient; we do NOT need to ship a shared key.
 
 > **HACKATHON.md "if you get rate-limited" runbook:** if a `429` ever appears
 > in chat, fall back to `OFFLINE=1` for the demo. The envelope inspector still
@@ -128,7 +128,7 @@ insurance) are sufficient; we do NOT need to ship a shared key.
 | `langchain` | `1.2.15` | — |
 | `langgraph` | `1.1.6` | — |
 | `langgraph-cli[inmem]` | `0.4.21` | — |
-| `langchain-openai` | `1.1.9` | Used for Gemini via OpenAI-compat too |
+| `langchain-openai` | `1.1.9` | Drives the OpenAI swap path and the documented Gemini OpenAI-compat fallback |
 | `langchain-anthropic` | `1.4.1` | For the Anthropic swap matrix |
 | `copilotkit` | `0.1.87` | Python SDK |
 | `openai` | `1.109.1` | Transitive (used by langchain-openai) |

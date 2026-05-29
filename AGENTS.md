@@ -28,10 +28,13 @@ Read `HACKATHON.md` for the customization recipes.
 2. **Always run `pnpm validate-widget <path>`** after editing any widget JSON.
 3. **Always run `pnpm smoke`** before declaring work done. `smoke` is a
    composite gate: validators + pin check + offline path + canned prompt.
-4. **Default LLM is Gemini 2.5 Flash via OpenAI compat.** Do not change
-   `base_url` or `model` in `agent/main.py` unless told. Gemini 3.x is a
-   known trap (thought-signature requirement that `langchain-openai` does not
-   yet implement). See `FROZEN.md` § LLM provider.
+4. **Default LLM is Gemini 3.5 Flash via the native Google Gen AI SDK
+   (`langchain-google-genai`).** Do not change the model line in
+   `agent/main.py` unless told. The native SDK is required because Gemini
+   3.x's thought-signature replay across tool turns is not implemented by
+   `langchain-openai`. The OpenAI-compat path is documented as a fallback in
+   `FROZEN.md` § LLM provider (sticks on `gemini-2.5-flash` for the same
+   reason).
 5. **Don't edit `src/components/EnvelopeInspector.tsx`** unless asked. It is
    the hackathon's "show the wire" affordance — surfaces must stay visible.
 6. **Don't write new React renderers for A2UI primitives.** Use the catalog

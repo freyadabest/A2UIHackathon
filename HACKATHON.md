@@ -231,9 +231,7 @@ whole agent personality needs to change.
 > relative imports (`from .tools import ...`) break. The canonical fix
 > is four lines of sys.path injection at the top of `graph.py` plus
 > absolute imports. `other-examples/legal-contract-review/agent/graph.py`
-> is the reference; PLAN.md §6.1 has the full recipe (including the
-> Docker variant for issue #12 and the package-name non-collision trick
-> for issue #15). Don't try to make relative imports work — they won't.
+> is the reference. Don't try to make relative imports work — they won't.
 
 ---
 
@@ -259,8 +257,10 @@ disappears — zero cost if you're not using Track 1.
 
 ## If you get rate-limited
 
-The default LLM is **Gemini 2.5 Flash** via Google's OpenAI-compatible
-endpoint. From the empirical load test in `FROZEN.md`:
+The default LLM is **Gemini 3.5 Flash** via the native Google Gen AI SDK
+(`langchain-google-genai`). The empirical load test in `FROZEN.md` measured
+the OpenAI-compat fallback path on `gemini-2.5-flash`, but the headroom
+shape is similar:
 
 - Single key, 30 concurrent agentic requests: 30/30 succeed, p95 ~2s.
 - Single key, 100 concurrent: 100/100 succeed, p95 ~2.3s.

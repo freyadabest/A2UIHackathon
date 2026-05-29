@@ -48,9 +48,6 @@
       "Bash(npm add @copilotkit/*)"
     ]
   },
-  "commit": {
-    "coAuthor": "Claude <noreply@anthropic.com>"
-  },
   "env": {
     "COPILOTKIT_A2UI_STARTER": "1"
   }

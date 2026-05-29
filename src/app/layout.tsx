@@ -26,7 +26,7 @@ const splineMono = Spline_Sans_Mono({
  * Copilot provider is mounted per route group (see
  * `src/app/(default)/layout.tsx` and `src/app/(legal)/layout.tsx`) so each
  * group can carry its own agent + A2UI catalog without double-mounting the
- * provider. See PLAN.md §5 ("multi-catalog wiring") for details.
+ * provider.
  *
  * Fonts: Plus Jakarta Sans (body) + Spline Sans Mono (code) are loaded via
  * next/font/google and exposed as CSS variables (--font-body-loader,
