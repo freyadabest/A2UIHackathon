@@ -113,13 +113,13 @@ export default function HomePage() {
       </div>
 
       {/* Tasteful sponsor credit — the canonical Track 2 starter for the
-          Generative UI Hackathon. Removable if it gets in your way, but
+          London A2A & A2UI Hackathon. Removable if it gets in your way, but
           leaving it in is the easiest way to credit sponsors during judging. */}
       <p
         aria-label="Sponsor credit"
         className="pointer-events-none fixed bottom-1 left-1/2 -translate-x-1/2 z-10 text-[10px] text-[var(--muted-foreground,#9ca3af)] opacity-60 select-none max-lg:hidden"
       >
-        Built for the Generative UI Hackathon. Sponsored by Google DeepMind
+        Built for the London A2A &amp; A2UI Hackathon. Sponsored by Google Cloud
         &middot; CopilotKit &middot; A2A Net.
       </p>
     </BrandFrame>

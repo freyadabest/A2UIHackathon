@@ -1,8 +1,8 @@
 # CopilotKit A2UI Hackathon Starter — Agent Guide
 
-You are working in a hackathon starter for the **Generative UI Hackathon**
-(London slot, Google CSG venue, May 2026). The hacker wants to customize this
-app to demo their own domain inside the build window of a 5-hour hackathon.
+You are working in a hackathon starter for the **London A2A & A2UI Hackathon**
+(Google London CSG, June 13, 2026). The hacker wants to customize this
+app to demo their own domain inside the build window of a one-day hackathon.
 Speed and clarity beat completeness. Pattern-match aggressively — copy the
 canonical examples named in this guide rather than inventing new ones.
 

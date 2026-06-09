@@ -1,6 +1,6 @@
 # HACKATHON.md — Your 5-Hour Playbook
 
-Welcome to the Generative UI Hackathon — London slot. This is the
+Welcome to the London A2A & A2UI Hackathon. This is the
 canonical Track 2 (A2UI) starter from CopilotKit. The repo is already wired:
 two LangGraph agents on a FastAPI server (`uvicorn main:app`, `:8123`), an
 A2UI v0.9 renderer, a 21-component catalog, the **pdf-analyst** demo

@@ -1,7 +1,7 @@
 # Welcome to the A2UI Hackathon Starter
 
 You're looking at the official **Track 2 (A2UI Generative UI)** starter for the
-Generative UI Hackathon. Today, your team has roughly 5 hours to fork this
+London A2A & A2UI Hackathon. Today, your team has roughly 5 hours to fork this
 repo, re-skin it for a domain your judges will remember, and demo agent-driven
 UI live on stage. The starter does the boring 80% so you can focus on the fun
 20%.

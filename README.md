@@ -1,14 +1,14 @@
-# Agent Interoperability (A2A, A2UI, & AG-UI) Generative UI Hackathon — London Starter Kit
+# London A2A & A2UI Hackathon — Starter Kit
 
-Welcome to the **Agent Interoperability (A2A, A2UI, & AG-UI) Generative UI Hackathon**! This starter kit gives you a working agent-driven UI — a Next.js + FastAPI app where the agent emits declarative **A2UI** envelopes and the frontend renders them as live React components. Wired up with CopilotKit, AG-UI, Google A2UI, Gemini, and an optional A2A bolt-on for Track 1 interop.
+Welcome to the **London A2A & A2UI Hackathon** — a full-day event at **Google London CSG** on **Saturday, June 13, 2026**, bringing together Google Cloud, [A2A Net](https://a2anet.com/), and [CopilotKit](https://copilotkit.ai). This starter kit is CopilotKit's head start for the **A2UI (Generative UI) track** — a Next.js + FastAPI app where the agent emits declarative **A2UI** envelopes and the frontend renders them as live React components. Wired up with CopilotKit, AG-UI, Google A2UI, Gemini, and an A2A bolt-on for the **Agent Interoperability track**.
 
-The headline demo is **pdf-analyst**: drop a PDF in chat and the agent builds the answer UI for you — a fixed-schema dashboard for the at-a-glance view and dynamic A2UI surfaces (Recharts) for any follow-up question. The boring 80% (a 21-component A2UI catalog, the in-canvas surface renderer, the agent loop, the FastAPI transport) is already built so your team can spend the 5-hour build window on the parts judges remember: your domain, your widgets, your branding.
+The headline demo is **pdf-analyst**: drop a PDF in chat and the agent builds the answer UI for you — a fixed-schema dashboard for the at-a-glance view and dynamic A2UI surfaces (Recharts) for any follow-up question. The boring 80% (a 21-component A2UI catalog, the in-canvas surface renderer, the agent loop, the FastAPI transport) is already built so your team can spend the build day on the parts judges remember: your domain, your widgets, your branding.
 
 https://github.com/user-attachments/assets/c053d2e8-1d40-43cb-8c5a-8e5c121b851f
 
 ## About this starter
 
-This is the canonical **A2UI Generative UI** starter for the Generative UI Hackathon — a globally-coordinated, multi-city, 5-hour build slot. The default LLM is **Gemini 3.5 Flash** via the native Google Gen AI SDK (`langchain-google-genai`), with hot-swappable providers in a 3-line `.env.example` change (OpenAI GPT-5.5, Anthropic Claude Opus 4.7, or any LiteLLM-compatible endpoint).
+This is CopilotKit's starter for the **A2UI (Generative UI) track** of the London A2A & A2UI Hackathon — a full-day, in-person build at Google London CSG. The default LLM is **Gemini 3.5 Flash** via the native Google Gen AI SDK (`langchain-google-genai`), with hot-swappable providers in a 3-line `.env.example` change (OpenAI GPT-5.5, Anthropic Claude Opus 4.7, or any LiteLLM-compatible endpoint).
 
 This is an example application that we built to help you get started quickly. Everything you see can be customized, replaced, augmented, or built upon. Six grep-anchored **customization seams** mark the spots designed to be edited — search the repo for `CUSTOMIZATION SEAM` and the full recipes live in [HACKATHON.md](HACKATHON.md).
 
@@ -22,7 +22,7 @@ The agent sends three operations: `createSurface`, `updateComponents`, `updateDa
 
 ## Stack
 
-- **[A2A](https://a2a-protocol.org/)** — Agent2Agent protocol for cross-team interop. Linux Foundation project, contributed by Google. v1.0.1 GA. Wired here as a dormant bolt-on (set `A2A_AGENT_URL` to activate). [Repo →](https://github.com/a2aproject/A2A)
+- **[A2A](https://a2a-protocol.org/)** — Agent2Agent protocol for cross-team interop, and the basis of the hackathon's **Track 1 (Interoperability Challenge)**. Linux Foundation project, contributed by Google. v1.0.1 GA. Wired here as a bolt-on for connecting to another team's agent (set `A2A_AGENT_URL` to activate — see [A2A Net](https://a2anet.com/)). [Repo →](https://github.com/a2aproject/A2A)
 - **[A2UI](https://a2ui.org/)** — Google's open declarative UI envelope protocol. Lets agents "speak UI" by sending JSON that renders natively across frameworks. This starter is built around A2UI v0.9. [Spec →](https://a2ui.org/specification/v0.9-a2ui/) · [Repo →](https://github.com/google/A2UI)
 - **[AG-UI](https://docs.ag-ui.com/)** — Open, lightweight, event-based protocol that standardizes how agents connect to user-facing apps. Originated from CopilotKit; now maintained by the [AG-UI Protocol working group](https://github.com/ag-ui-protocol/ag-ui). AG-UI carries A2UI envelopes between the LangGraph agent and the Next.js runtime here.
 - **[CopilotKit](https://docs.copilotkit.ai/)** — The runtime that wires AG-UI through your Next.js app and ships the A2UI renderer. The chat UI, the in-canvas surface renderer, and provider plumbing all come from here. AI-assistant skills + MCP server at [`docs.copilotkit.ai/built-in-agent/build-with-agents`](https://docs.copilotkit.ai/built-in-agent/build-with-agents).
@@ -89,18 +89,22 @@ The starter also ships:
 
 > **Adding a component.** The pdf-analyst catalog is a single design system — a component definition + React renderer in `src/a2ui/catalog/{definitions.ts,renderers.tsx}`, mirrored as a prompt summary in `agent/src/catalog.py` so the agent knows it exists. (The original fixed-schema "widget dance" — catalog JSON + fixture + Python tool + prompt hint — lives with the archived PortKit demo under [`other-examples/portkit/`](other-examples/portkit/).)
 
-## Other tracks (we don't gatekeep)
+## The two tracks
 
-A2UI isn't the only protocol pillar in this hackathon. If your team's idea fits one of the other tracks better, build there instead — we'd rather you ship something great than force-fit your demo into our starter.
+The hackathon runs two tracks. This starter is built for **Track 2**, and supports **Track 1** via the A2A bolt-on:
 
-- **Track 1 multi-team interop (A2A)** — [A2A Net's template](https://a2anet.com/)
-- **Other CopilotKit examples** — [CopilotKit/examples/integrations](https://github.com/CopilotKit/CopilotKit/tree/main/examples/integrations) (chat-first, LangGraph-only, CrewAI, Mastra, etc.)
+- **Track 1 — A2A Interoperability Challenge.** Build a system of 3+ agents that coordinate to solve a problem, and integrate with an agent built by *another team*. Runs on the [A2A Net platform](https://a2anet.com/); connect this starter's agent to partner agents via `A2A_AGENT_URL` (Seam §6).
+- **Track 2 — A2UI (Generative UI) Challenge.** Build a dynamic app that features both an autonomous agent and a Generative UI. This starter is your head start — a pre-built agent + 21-component A2UI catalog — so you can focus on the UI.
+
+Other building blocks (use what helps, skip what doesn't):
+
 - **A2UI Composer** (visual envelope authoring) — [a2ui-composer.ag-ui.com](https://a2ui-composer.ag-ui.com/)
+- **Other CopilotKit examples** — [CopilotKit/examples/integrations](https://github.com/CopilotKit/CopilotKit/tree/main/examples/integrations) (chat-first, LangGraph-only, CrewAI, Mastra, etc.)
 
 ## Documentation
 
 - **[WELCOME.md](WELCOME.md)** — 200-word orientation
-- **[HACKATHON.md](HACKATHON.md)** — your full 5-hour playbook with hour-by-hour template
+- **[HACKATHON.md](HACKATHON.md)** — your full build-day playbook with hour-by-hour template
 - **[other-examples/portkit/DEMO.md](other-examples/portkit/DEMO.md)** — the archived PortKit on-stage script (3 min, 5 turns + recovery)
 - **[AGENTS.md](AGENTS.md)** — agent guide for your AI coding assistant
 - **[FROZEN.md](FROZEN.md)** — version-pinning rationale and the Gemini 3.x thought-signature trap
