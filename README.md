@@ -125,4 +125,3 @@ MIT. See [LICENSE](LICENSE).
 - **agents.md spec** — Linux Foundation cross-tool standard (backed by OpenAI, Google, Sourcegraph, Cursor, Factory)
 - **Base starter** — [CopilotKit/examples/integrations/langgraph-python](https://github.com/CopilotKit/CopilotKit/tree/main/examples/integrations/langgraph-python)
 
-Built for the **Generative UI Hackathon: Agentic Interfaces** — London slot.
