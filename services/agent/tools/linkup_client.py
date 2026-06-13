@@ -6,7 +6,18 @@ from linkup import LinkupClient
 
 from cache import get_cached, set_cached
 
-_client = LinkupClient(api_key=os.environ.get("LINKUP_API_KEY", ""))
+_client: LinkupClient | None = None
+
+
+def _get_client() -> LinkupClient:
+    """Lazily build the Linkup client so the service can boot without a key."""
+    global _client
+    if _client is None:
+        api_key = os.environ.get("LINKUP_API_KEY")
+        if not api_key:
+            raise RuntimeError("LINKUP_API_KEY is not set")
+        _client = LinkupClient(api_key=api_key)
+    return _client
 
 
 def search(query: str, depth: str = "standard", output_type: str = "searchResults", **kwargs: Any):
@@ -16,7 +27,7 @@ def search(query: str, depth: str = "standard", output_type: str = "searchResult
     if cached is not None:
         return cached
 
-    result = _client.search(
+    result = _get_client().search(
         query=query,
         depth=depth,
         output_type=output_type,

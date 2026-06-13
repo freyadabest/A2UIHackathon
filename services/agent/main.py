@@ -6,7 +6,7 @@ competitor-lookup endpoint for local testing.
 """
 import os
 
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 
 from agent import run_competitor_lookup
@@ -27,7 +27,10 @@ class LookupRequest(BaseModel):
 @app.post("/competitors")
 def competitors(req: LookupRequest) -> dict:
     """Local dev helper: returns an A2UI panel spec for the competitor table."""
-    return run_competitor_lookup(req.business_type, req.area)
+    try:
+        return run_competitor_lookup(req.business_type, req.area)
+    except RuntimeError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
 
 
 if __name__ == "__main__":
