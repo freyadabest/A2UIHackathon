@@ -57,13 +57,13 @@ flowchart LR
 sequenceDiagram
     actor U as User
     participant C as CopilotChat
-    participant R as Copilot Runtime<br/>(/api/copilotkit)
+    participant R as Copilot Runtime
     participant A as Agent (Gemini)
     participant L as Linkup API
     participant D as Redis
     participant P as A2UI Canvas
 
-    U->>C: "Open a Pilates studio in Shoreditch"
+    U->>C: Open a Pilates studio in Shoreditch
     C->>R: prompt (AG-UI)
     R->>A: forward (AG-UI)
     A->>A: parse business_type + area
