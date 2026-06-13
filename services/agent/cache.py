@@ -18,9 +18,15 @@ def _key(namespace: str, payload: dict) -> str:
 
 
 def get_cached(namespace: str, payload: dict) -> Optional[Any]:
-    raw = _client.get(_key(namespace, payload))
+    try:
+        raw = _client.get(_key(namespace, payload))
+    except redis.RedisError:
+        return None  # degrade gracefully if Redis is unavailable
     return json.loads(raw) if raw else None
 
 
 def set_cached(namespace: str, payload: dict, value: Any, ttl: int = DEFAULT_TTL) -> None:
-    _client.set(_key(namespace, payload), json.dumps(value), ex=ttl)
+    try:
+        _client.set(_key(namespace, payload), json.dumps(value), ex=ttl)
+    except redis.RedisError:
+        pass  # caching is best-effort
