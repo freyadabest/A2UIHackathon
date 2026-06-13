@@ -20,35 +20,35 @@
  * ─────────────────────────────────────────────────────────────────────── */
 
 .pdf-analyst-root {
-  /* Surfaces */
-  --bg: #fafafc;
-  --bg-alt: #ededf5;
-  --surface: #ffffff;
-  --surface-soft: #f7f7f9;
-  --ink: #010507;
-  --ink-2: #2b2b2b;
-  --muted: #45454a;
-  --muted-2: #5a5a60;
-  --line: #dbdbe5;
-  --line-2: #e9e9ef;
+  /* Surfaces — warm cream / beige */
+  --bg: #fdf8f3;
+  --bg-alt: #f5e6d8;
+  --surface: #fffcf8;
+  --surface-soft: #faf0e6;
+  --ink: #4a3a38;
+  --ink-2: #5c4946;
+  --muted: #8c726c;
+  --muted-2: #a08983;
+  --line: #ecd9c9;
+  --line-2: #f3e6d9;
 
-  /* Accents — Vantage AI: violet vantage, teal signal, amber opportunity */
-  --lilac: #6d5ef0;
-  --lilac-soft: #6d5ef033; /* 20% */
-  --lilac-softer: #6d5ef01a; /* 10% */
-  --mint: #19b89a;
-  --mint-soft: #19b89a4d; /* 30% */
-  --orange: #ff9a3d;
-  --orange-soft: #ff9a3d33;
-  --yellow: #ffd166;
-  --red: #fa5f67;
+  /* Accents — cream/beige/pink pastel: rose primary, peach + coral signals */
+  --lilac: #d98aa6;
+  --lilac-soft: #d98aa633; /* 20% */
+  --lilac-softer: #d98aa61a; /* 10% */
+  --mint: #e3b393;
+  --mint-soft: #e3b3934d; /* 30% */
+  --orange: #f0b48a;
+  --orange-soft: #f0b48a33;
+  --yellow: #f3d9a8;
+  --red: #e08a8a;
 
-  /* Brand gradient */
+  /* Brand gradient — pastel pink → peach → rose */
   --brand-gradient: linear-gradient(
     90deg,
-    #6d5ef0 0%,
-    #19b89a 50%,
-    #ff9a3d 100%
+    #f3b8cd 0%,
+    #f1cdb0 50%,
+    #e6a6c2 100%
   );
 
   /* Type tokens */

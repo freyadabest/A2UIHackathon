@@ -58,14 +58,6 @@ export function SiteNav({
               {l.label}
             </Link>
           ))}
-          <a
-            href="https://docs.copilotkit.ai"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="ml-2 px-3 py-1.5 rounded-lg text-[13.5px] text-[var(--muted)] hover:text-[var(--ink)]"
-          >
-            Docs ↗
-          </a>
         </nav>
       </div>
     </header>
