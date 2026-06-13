@@ -2,33 +2,53 @@
 
 export type Competitor = {
   name: string;
-  rating?: number;
-  reviews?: number;
+  rating?: number | null;
+  reviews?: number | null;
   url?: string;
   location?: string;
 };
 
 export function CompetitorTable({ competitors }: { competitors: Competitor[] }) {
   return (
-    <table style={{ width: "100%", borderCollapse: "collapse" }}>
-      <thead>
-        <tr>
-          <th style={{ textAlign: "left" }}>Name</th>
-          <th>Rating</th>
-          <th>Reviews</th>
-          <th style={{ textAlign: "left" }}>Location</th>
-        </tr>
-      </thead>
-      <tbody>
-        {competitors.map((c) => (
-          <tr key={c.name}>
-            <td>{c.url ? <a href={c.url}>{c.name}</a> : c.name}</td>
-            <td style={{ textAlign: "center" }}>{c.rating ?? "—"}</td>
-            <td style={{ textAlign: "center" }}>{c.reviews ?? "—"}</td>
-            <td>{c.location ?? "—"}</td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
+    <div className="panel">
+      <div className="panel-head">
+        <h2>Competitors</h2>
+        <span className="panel-sub">{competitors.length} found</span>
+      </div>
+      {competitors.length === 0 ? (
+        <p className="empty">No competitors found — try a different area.</p>
+      ) : (
+        <table className="table">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th className="num">Rating</th>
+              <th className="num">Reviews</th>
+              <th>Location</th>
+            </tr>
+          </thead>
+          <tbody>
+            {competitors.map((c, i) => (
+              <tr key={`${c.name}-${i}`}>
+                <td>
+                  {c.url ? (
+                    <a href={c.url} target="_blank" rel="noreferrer">
+                      {c.name}
+                    </a>
+                  ) : (
+                    c.name
+                  )}
+                </td>
+                <td className="num">{c.rating != null ? `${c.rating}★` : "—"}</td>
+                <td className="num">
+                  {c.reviews != null ? c.reviews.toLocaleString() : "—"}
+                </td>
+                <td>{c.location ?? "—"}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
+    </div>
   );
 }
