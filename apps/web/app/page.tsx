@@ -11,6 +11,12 @@ type DashboardResponse = {
   panels: PanelSpec[];
 };
 
+type ReviewPanel = {
+  type: "panel";
+  name: "ReviewThemes";
+  props: Record<string, unknown>;
+};
+
 const EXAMPLES = [
   "I want to open a Pilates studio in Shoreditch",
   "A specialty coffee shop in Williamsburg, Brooklyn",
@@ -22,12 +28,17 @@ export default function Page() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [data, setData] = useState<DashboardResponse | null>(null);
+  const [reviewPanels, setReviewPanels] = useState<ReviewPanel[]>([]);
+  const [reviewLoading, setReviewLoading] = useState<string | null>(null);
+  const [reviewError, setReviewError] = useState<string | null>(null);
 
   async function build(input: string) {
     const trimmed = input.trim();
     if (!trimmed || loading) return;
     setLoading(true);
     setError(null);
+    setReviewPanels([]);
+    setReviewError(null);
     try {
       const res = await fetch("/api/dashboard", {
         method: "POST",
@@ -51,6 +62,42 @@ export default function Page() {
       setLoading(false);
     }
   }
+
+  async function analyzeReviews(competitor: string) {
+    if (!data || reviewLoading) return;
+    setReviewLoading(competitor);
+    setReviewError(null);
+    try {
+      const res = await fetch("/api/reviews", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          competitor,
+          businessType: data.businessType,
+          area: data.area,
+        }),
+        signal: AbortSignal.timeout(55_000),
+      });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json?.detail ?? "request failed");
+      setReviewPanels((prev) => [...prev, json as ReviewPanel]);
+    } catch (e) {
+      const msg =
+        e instanceof Error && e.name === "TimeoutError"
+          ? "The review analysis took too long. Please try again."
+          : e instanceof Error
+            ? e.message
+            : "Something went wrong";
+      setReviewError(msg);
+    } finally {
+      setReviewLoading(null);
+    }
+  }
+
+  const competitors =
+    data?.panels
+      .find((p) => p.name === "CompetitorTable")
+      ?.props?.competitors as Array<{ name: string }> | undefined;
 
   return (
     <main className="shell">
@@ -121,6 +168,40 @@ export default function Page() {
               </div>
             )}
             <PanelRenderer panels={data.panels} />
+
+            {competitors && competitors.length > 0 && (
+              <div className="panel follow-ups">
+                <div className="panel-head">
+                  <h2>Deep Dive</h2>
+                  <span className="panel-sub">
+                    Pick a competitor to analyze their reviews
+                  </span>
+                </div>
+                <div className="follow-up-grid">
+                  {competitors.map((c, i) => (
+                    <button
+                      key={`${c.name}-${i}`}
+                      className="follow-up-btn"
+                      onClick={() => analyzeReviews(c.name)}
+                      disabled={reviewLoading === c.name}
+                    >
+                      {reviewLoading === c.name
+                        ? `Analyzing ${c.name}…`
+                        : `What are ${c.name}&rsquo;s strengths & weaknesses?`}
+                    </button>
+                  ))}
+                </div>
+                {reviewError && (
+                  <p className="empty" style={{ marginTop: 12 }}>
+                    {reviewError}
+                  </p>
+                )}
+              </div>
+            )}
+
+            {reviewPanels.length > 0 && (
+              <PanelRenderer panels={reviewPanels} />
+            )}
           </>
         )}
 

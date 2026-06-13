@@ -58,3 +58,16 @@ def ratings_chart(competitors: list[dict]) -> dict[str, Any]:
     ]
     bars.sort(key=lambda b: b["rating"], reverse=True)
     return panel("RatingsChart", {"bars": bars[:10], "max": 5})
+
+
+def review_themes_panel(result: dict) -> dict[str, Any]:
+    """Build a ReviewThemes panel from the analyze_reviews result."""
+    return panel(
+        "ReviewThemes",
+        {
+            "competitor": result.get("competitor", ""),
+            "strengths": result.get("strengths", []),
+            "weaknesses": result.get("weaknesses", []),
+            "usingSampleData": result.get("usingSampleData", False),
+        },
+    )

@@ -11,7 +11,7 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
-from agent import build_dashboard, run_competitor_lookup
+from agent import build_dashboard, run_competitor_lookup, run_reviews_lookup
 
 app = FastAPI(title="VantageAI Agent")
 
@@ -59,6 +59,21 @@ def competitors(req: LookupRequest) -> dict:
     """Direct competitor-table lookup for a known business type + area."""
     try:
         return run_competitor_lookup(req.business_type, req.area)
+    except RuntimeError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+
+class ReviewsRequest(BaseModel):
+    competitor: str
+    business_type: str
+    area: str
+
+
+@app.post("/reviews")
+def reviews(req: ReviewsRequest) -> dict:
+    """Analyze reviews for a competitor and return a ReviewThemes panel spec."""
+    try:
+        return run_reviews_lookup(req.competitor, req.business_type, req.area)
     except RuntimeError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
 

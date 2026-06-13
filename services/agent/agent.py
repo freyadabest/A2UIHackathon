@@ -12,7 +12,8 @@ import os
 
 from tools.competitors import discover_competitors
 from tools.idea_parser import parse_idea
-from ui_specs import competitor_table, market_summary, ratings_chart
+from tools.review_analyzer import analyze_reviews
+from ui_specs import competitor_table, market_summary, ratings_chart, review_themes_panel
 
 GEMINI_MODEL = os.environ.get("GEMINI_MODEL", "gemini-2.5-flash")
 
@@ -20,6 +21,7 @@ GEMINI_MODEL = os.environ.get("GEMINI_MODEL", "gemini-2.5-flash")
 TOOLS = {
     "discover_competitors": discover_competitors,
     "parse_idea": parse_idea,
+    "analyze_reviews": analyze_reviews,
 }
 
 # Used only when LINKUP_API_KEY is absent, so the app demos out of the box.
@@ -44,6 +46,12 @@ def run_competitor_lookup(business_type: str, area: str) -> dict:
     """Discover competitors and build the competitor-table panel spec."""
     competitors = _competitors_for(business_type, area)
     return competitor_table(competitors)
+
+
+def run_reviews_lookup(competitor_name: str, business_type: str, area: str) -> dict:
+    """Analyze reviews for a competitor and build the review-themes panel spec."""
+    result = analyze_reviews(competitor_name, business_type, area)
+    return review_themes_panel(result)
 
 
 def build_dashboard(idea: str) -> dict:
