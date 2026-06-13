@@ -25,6 +25,21 @@ Built for the **A2UI Hackathon** (Freya & Rosemary).
 
 ---
 
+## Quickstart
+
+```bash
+cp .env.example .env   # fill in LINKUP_API_KEY, GOOGLE_API_KEY
+docker compose up      # web :3000 · agent :8000 · redis :6379
+
+# or run pieces locally:
+cd services/agent && pip install -r requirements.txt && uvicorn main:app --reload
+cd apps/web && npm install && npm run dev
+```
+
+See [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) for the architecture diagram.
+
+---
+
 ## How it works
 
 ```

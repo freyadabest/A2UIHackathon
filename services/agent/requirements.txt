@@ -1,0 +1,8 @@
+fastapi>=0.111
+uvicorn[standard]>=0.30
+ag-ui-protocol>=0.1.0
+linkup-sdk>=0.2.0
+google-genai>=0.3.0
+redis>=5.0
+pydantic>=2.7
+python-dotenv>=1.0
