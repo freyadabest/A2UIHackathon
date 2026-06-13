@@ -1,7 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import { CopilotChat, useAgent } from "@copilotkit/react-core/v2";
+import {
+  CopilotChat,
+  useAgent,
+  useConfigureSuggestions,
+} from "@copilotkit/react-core/v2";
 import { SiteNav } from "@/components/pdf-analyst/Brand";
 import { SurfaceCanvas, CanvasEmptyState } from "@/components/pdf-analyst/SurfaceCanvas";
 import { FilteredUserMessage } from "@/components/pdf-analyst/FilteredUserMessage";
@@ -13,6 +17,32 @@ const AGENT_ID = "fixed_agent";
 
 export default function FixedPage() {
   const { agent: _agent } = useAgent({ agentId: AGENT_ID });
+
+  // Pre-canned example questions shown as clickable pills before the first
+  // message. `title` is the pill label; `message` is what gets sent on click.
+  useConfigureSuggestions({
+    available: "before-first-message",
+    consumerAgentId: AGENT_ID,
+    suggestions: [
+      {
+        title: "Pilates studio in Shoreditch",
+        message: "I want to open a Pilates studio in Shoreditch.",
+      },
+      {
+        title: "Specialty coffee shop in Hackney",
+        message: "I'm scoping a specialty coffee shop in Hackney.",
+      },
+      {
+        title: "Boutique gym in Islington",
+        message: "Map the competition for a boutique gym in Islington.",
+      },
+      {
+        title: "Independent bookshop in Brighton",
+        message: "I want to open an independent bookshop in Brighton.",
+      },
+    ],
+  });
+
   const [loaded, setLoaded] = useState<{
     filename: string;
     pages: number;
