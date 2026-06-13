@@ -1,22 +1,52 @@
-"""AG-UI server entrypoint for the VantageAI agent (skeleton).
+"""HTTP server entrypoint for the VantageAI agent.
 
-Exposes an HTTP endpoint the CopilotKit runtime connects to. The full AG-UI
-event stream wiring lands in Phase 1; this scaffold provides health + a direct
-competitor-lookup endpoint for local testing.
+Exposes the endpoints the frontend uses:
+- GET  /health      liveness + active model
+- POST /dashboard   one free-text idea -> a generative A2UI dashboard
+- POST /competitors direct competitor-table lookup (business_type + area)
 """
 import os
 
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
-from agent import run_competitor_lookup
+from agent import build_dashboard, run_competitor_lookup
 
 app = FastAPI(title="VantageAI Agent")
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 @app.get("/health")
 def health() -> dict:
-    return {"status": "ok", "model": os.environ.get("GEMINI_MODEL", "gemini-2.5-flash")}
+    return {
+        "status": "ok",
+        "model": os.environ.get("GEMINI_MODEL", "gemini-2.5-flash"),
+        "linkup": bool(os.environ.get("LINKUP_API_KEY")),
+        "gemini": bool(os.environ.get("GOOGLE_API_KEY")),
+    }
+
+
+class DashboardRequest(BaseModel):
+    idea: str
+
+
+@app.post("/dashboard")
+def dashboard(req: DashboardRequest) -> dict:
+    """Turn one sentence into a generative competitor dashboard."""
+    idea = req.idea.strip()
+    if not idea:
+        raise HTTPException(status_code=400, detail="idea must not be empty")
+    try:
+        return build_dashboard(idea)
+    except RuntimeError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
 
 
 class LookupRequest(BaseModel):
@@ -26,7 +56,7 @@ class LookupRequest(BaseModel):
 
 @app.post("/competitors")
 def competitors(req: LookupRequest) -> dict:
-    """Local dev helper: returns an A2UI panel spec for the competitor table."""
+    """Direct competitor-table lookup for a known business type + area."""
     try:
         return run_competitor_lookup(req.business_type, req.area)
     except RuntimeError as exc:
