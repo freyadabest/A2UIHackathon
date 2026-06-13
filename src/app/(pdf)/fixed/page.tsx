@@ -110,7 +110,7 @@ export default function FixedPage() {
                 labels={{
                   chatInputPlaceholder:
                     "Describe an area + business, e.g. “Pilates studio in Shoreditch”…",
-                  welcomeMessageText: "",
+                  welcomeMessageText: "Who's already on your turf? Let's find out.",
                 }}
               />
             </div>

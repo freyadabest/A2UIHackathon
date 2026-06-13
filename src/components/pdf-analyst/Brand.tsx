@@ -88,12 +88,12 @@ export function SiteNav({
             A2UI
           </span>
         </Link>
-        <nav className="flex items-center gap-1">
+        <nav className="flex flex-1 items-center gap-2 ml-8">
           {links.map((l) => (
             <Link
               key={l.key}
               href={l.href}
-              className={`px-3 py-1.5 rounded-lg text-[13.5px] transition ${
+              className={`flex-1 text-center px-3 py-1.5 rounded-lg text-[13.5px] transition ${
                 active === l.key
                   ? "bg-[var(--surface-soft)] text-[var(--ink)] border border-[var(--line)]"
                   : "text-[var(--muted)] hover:text-[var(--ink)]"

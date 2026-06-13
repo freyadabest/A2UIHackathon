@@ -142,3 +142,19 @@
   padding-right: 12px;
   padding-bottom: 10px;
 }
+
+/* The welcome one-liner above the search bar (CopilotChat renders it as an
+ * <h1>). Give it the display font + brand gradient so it reads as a punchy,
+ * beautiful headline rather than plain UI text. */
+.pdf-analyst-root .copilot-chat-wrapper h1 {
+  font-family: var(--font-display), var(--font-body) !important;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  font-size: clamp(1.5rem, 1.1rem + 1.4vw, 2.1rem);
+  line-height: 1.15;
+  background: var(--brand-gradient);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
