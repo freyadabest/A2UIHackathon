@@ -128,6 +128,9 @@ a {
 
 .canvas {
   margin-top: 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
 }
 
 .placeholder {
@@ -352,7 +355,7 @@ a {
   border: 1px solid var(--border);
   color: var(--text);
   border-radius: 12px;
-  padding: 14px 16px;
+  padding: 20px 22px;
   font-size: 14px;
   cursor: pointer;
   text-align: left;

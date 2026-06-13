@@ -187,7 +187,7 @@ export default function Page() {
                     >
                       {reviewLoading === c.name
                         ? `Analyzing ${c.name}…`
-                        : `What are ${c.name}&rsquo;s strengths & weaknesses?`}
+                        : `What are ${c.name}’s strengths & weaknesses?`}
                     </button>
                   ))}
                 </div>
