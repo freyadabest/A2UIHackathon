@@ -75,6 +75,35 @@ Open `http://localhost:3000`.
 
 > **No keys?** Set `OFFLINE=1` in `.env` — the `/fixed` endpoint serves a canned Shoreditch dashboard with no API calls. The catalog gallery at `/catalog` also works without keys.
 
+## Deploy to Google Cloud
+
+The whole app (Next.js frontend + FastAPI agent) ships as **one container** — the
+frontend serves on `$PORT` and the agent runs internally on `localhost:8123`,
+both started by `entrypoint.sh`. That makes **Cloud Run** the natural fit.
+
+**Easiest path — Google Cloud Shell** (gcloud + docker preinstalled, already
+authenticated):
+
+```bash
+# from the repo root, in Cloud Shell
+export GEMINI_API_KEY=...   # https://aistudio.google.com/apikey
+export LINKUP_API_KEY=...   # https://app.linkup.so
+./deploy.sh YOUR_PROJECT_ID
+```
+
+`deploy.sh` enables the required APIs, creates the Artifact Registry repo,
+stores the keys in **Secret Manager**, then runs [`cloudbuild.yaml`](cloudbuild.yaml)
+(build → push → deploy). It prints the public HTTPS URL when done.
+
+Defaults: region `europe-west2` (London), service/repo `vantage-ai`, `2 GiB` /
+`2 CPU`, `min-instances=1` (warm for demos), `600s` request timeout. Override
+with env vars: `REGION=europe-west1 SERVICE=my-app ./deploy.sh PROJECT`.
+
+> **Notes** — The Next build is memory-heavy, so Cloud Build runs on an
+> `E2_HIGHCPU_8` machine. Keep `FIXED_AGENT_URL` unset (the agent is in the same
+> container at `localhost:8123`). For a key-less smoke deploy, add
+> `--set-env-vars OFFLINE=1` to the deploy step.
+
 ## Project structure
 
 ```

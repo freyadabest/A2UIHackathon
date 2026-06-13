@@ -1,0 +1,71 @@
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# Cloud Build → Artifact Registry → Cloud Run pipeline for Vantage AI.
+#
+# Builds the single multi-stage image (Next.js standalone + FastAPI agent),
+# pushes it to Artifact Registry, and deploys it to Cloud Run. The Next build
+# is memory-heavy (NODE_OPTIONS=4GB), so we run the build on a high-CPU
+# machine (see `options.machineType`).
+#
+# Run it with deploy.sh, or directly:
+#   gcloud builds submit --config cloudbuild.yaml \
+#     --substitutions=_REGION=europe-west2,_SERVICE=vantage-ai,_REPO=vantage-ai
+#
+# Secrets (GEMINI_API_KEY, LINKUP_API_KEY) must already exist in Secret
+# Manager — deploy.sh creates them for you. See README "Deploy to Google Cloud".
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+substitutions:
+  _REGION: europe-west2
+  _SERVICE: vantage-ai
+  _REPO: vantage-ai
+
+images:
+  - "${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPO}/${_SERVICE}:$SHORT_SHA"
+  - "${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPO}/${_SERVICE}:latest"
+
+steps:
+  # 1. Build the image (uses the repo Dockerfile).
+  - id: build
+    name: gcr.io/cloud-builders/docker
+    args:
+      - build
+      - "-t"
+      - "${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPO}/${_SERVICE}:$SHORT_SHA"
+      - "-t"
+      - "${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPO}/${_SERVICE}:latest"
+      - "."
+
+  # 2. Push both tags.
+  - id: push
+    name: gcr.io/cloud-builders/docker
+    args:
+      - push
+      - "--all-tags"
+      - "${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPO}/${_SERVICE}"
+
+  # 3. Deploy to Cloud Run. Keys come from Secret Manager; the agent runs
+  #    in-container on localhost:8123, so only the public PORT is exposed.
+  - id: deploy
+    name: gcr.io/google.com/cloudsdktool/cloud-sdk
+    entrypoint: gcloud
+    args:
+      - run
+      - deploy
+      - "${_SERVICE}"
+      - "--image=${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPO}/${_SERVICE}:$SHORT_SHA"
+      - "--region=${_REGION}"
+      - "--platform=managed"
+      - "--allow-unauthenticated"
+      - "--memory=2Gi"
+      - "--cpu=2"
+      - "--timeout=600"
+      - "--min-instances=1"
+      - "--max-instances=4"
+      - "--no-cpu-throttling"
+      - "--set-secrets=GEMINI_API_KEY=GEMINI_API_KEY:latest,LINKUP_API_KEY=LINKUP_API_KEY:latest"
+
+options:
+  machineType: E2_HIGHCPU_8
+  logging: CLOUD_LOGGING_ONLY
+
+timeout: 1800s
