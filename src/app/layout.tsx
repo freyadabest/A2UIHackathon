@@ -40,7 +40,11 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={`${jakarta.variable} ${splineMono.variable}`}>
+    <html
+      lang="en"
+      className={`${jakarta.variable} ${splineMono.variable}`}
+      suppressHydrationWarning
+    >
       <head>
         <title>CopilotKit</title>
         <link
@@ -49,7 +53,7 @@ export default function RootLayout({
           href="/copilotkit-logo-mark.svg"
         />
       </head>
-      <body className={`antialiased`}>
+      <body className={`antialiased`} suppressHydrationWarning>
         <ThemeProvider>{children}</ThemeProvider>
       </body>
     </html>
