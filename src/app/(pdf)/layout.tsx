@@ -1,4 +1,4 @@
-import { Plus_Jakarta_Sans, Spline_Sans_Mono } from "next/font/google";
+import { Plus_Jakarta_Sans, Spline_Sans_Mono, Sora } from "next/font/google";
 // CopilotChat v2 styles (scoped in effect — the .copilot-* classes only
 // appear inside the pdf-analyst chat panels).
 import "@copilotkit/react-ui/v2/styles.css";
@@ -26,6 +26,14 @@ const splineMono = Spline_Sans_Mono({
   display: "swap",
 });
 
+/* Display font for the Vantage AI wordmark / brand logo. */
+const sora = Sora({
+  variable: "--font-display",
+  subsets: ["latin"],
+  weight: ["600", "700", "800"],
+  display: "swap",
+});
+
 /* Segment layout for /pdf-analyst/*. Deliberately NOT a root layout — the
  * host `src/app/layout.tsx` owns <html>/<body>. This only mounts the
  * pdf-analyst CopilotKit provider and scopes the pdf-analyst design tokens
@@ -36,7 +44,7 @@ export default function PdfAnalystLayout({
   return (
     <Providers>
       <div
-        className={`pdf-analyst-root ${plusJakarta.variable} ${splineMono.variable} antialiased min-h-screen flex flex-col`}
+        className={`pdf-analyst-root ${plusJakarta.variable} ${splineMono.variable} ${sora.variable} antialiased min-h-screen flex flex-col`}
       >
         {children}
       </div>

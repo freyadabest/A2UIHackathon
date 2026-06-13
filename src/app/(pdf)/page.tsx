@@ -14,17 +14,17 @@ export default function Home() {
         }
         title={
           <>
-            Know the local landscape before you{" "}
+            Know your competition{" "}
             <br className="hidden md:inline" />
             <span
               className="bg-clip-text text-transparent"
               style={{ backgroundImage: "var(--brand-gradient)" }}
             >
-              sign the lease.
+              before you build.
             </span>
           </>
         }
-        subtitle="Name an area and a business — “a Pilates studio in Shoreditch” — and Vantage AI searches the live web, then paints a competitive-landscape dashboard: who's already there, how they're doing, and whether there's room for you."
+        subtitle="Every founder should understand the landscape before they start. Name an area and a business — “a Pilates studio in Shoreditch” — and Vantage AI searches the live web to map your competitors: who's already there, how they're doing, and where your opening is."
       />
 
       <main className="flex-1 max-w-[1320px] mx-auto px-6 py-12 w-full">

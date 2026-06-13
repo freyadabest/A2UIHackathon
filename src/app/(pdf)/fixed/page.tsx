@@ -110,8 +110,7 @@ export default function FixedPage() {
                 labels={{
                   chatInputPlaceholder:
                     "Describe an area + business, e.g. “Pilates studio in Shoreditch”…",
-                  welcomeMessageText:
-                    "Tell me the area and the business you're scoping — e.g. “I want to open a Pilates studio in Shoreditch” — and I'll map the competition live.",
+                  welcomeMessageText: "",
                 }}
               />
             </div>
