@@ -1,12 +1,18 @@
 # Vantage AI — Competitive-Landscape Intelligence
 
+_"I'm thinking of opening a Reformer Pilates studio in Shoreditch. Who's already there, what are they good at, where are they failing, and where's my opportunity?"_
+
 **Vantage AI** is a live competitive-intelligence dashboard powered by [Linkup](https://www.linkup.so/) web search and rendered with **A2UI v0.9** generative UI. Type an area + business type (e.g. *"Pilates studio in Shoreditch"*) and get a real-time dashboard with KPIs, charts, competitor tables, and interactive scope chips — all driven by an autonomous agent.
 
 Built on the [CopilotKit](https://copilotkit.ai) × [A2UI](https://a2ui.org/) starter for the **London A2A & A2UI Hackathon** (Google London CSG, June 13 2026).
 
+
+
 ---
 
 ## Demo
+
+https://tinyurl.com/vantage-a2ui-demo
 
 <video src="https://github.com/freyadabest/A2UIHackathon/raw/main/Vantage%20Demo.mp4" controls muted loop width="100%"></video>
 
