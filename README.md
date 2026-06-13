@@ -12,7 +12,7 @@ Built on the [CopilotKit](https://copilotkit.ai) × [A2UI](https://a2ui.org/) st
 
 ## Demo
 
-▶ **[Watch the Vantage AI demo](https://tinyurl.com/vantage-a2ui-demo)** &nbsp;·&nbsp; [`Vantage Demo.mp4`](Vantage%20Demo.mp4)
+▶ **[Watch the Vantage AI demo](https://tinyurl.com/vantage-demo-for-a2ui)** &nbsp;·&nbsp; [`Vantage Demo.mp4`](Vantage%20Demo.mp4)
 
 <!--
   Want an INLINE player on GitHub? A <video> tag pointing at the committed
