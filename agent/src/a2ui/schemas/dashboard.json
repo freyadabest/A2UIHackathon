@@ -103,8 +103,8 @@
   {
     "id": "trend-section",
     "component": "Section",
-    "eyebrow": "TREND",
-    "title": "Monthly performance",
+    "eyebrow": "DEMAND",
+    "title": "Demand curve",
     "child": "trend-card"
   },
   {
@@ -121,8 +121,8 @@
   {
     "id": "share-section",
     "component": "Section",
-    "eyebrow": "SHARE OF TOTAL",
-    "title": "Breakdown",
+    "eyebrow": "CLASS MIX",
+    "title": "Service mix",
     "child": "share-card"
   },
   {
@@ -141,7 +141,7 @@
     "id": "table-section",
     "component": "Section",
     "eyebrow": "DETAIL",
-    "title": "Top rows",
+    "title": "Competitors nearby",
     "child": "table-card"
   },
   {
@@ -153,9 +153,9 @@
     "id": "table",
     "component": "DataTable",
     "columns": [
-      { "key": "name", "label": "Name", "align": "left" },
-      { "key": "category", "label": "Category", "align": "left" },
-      { "key": "value", "label": "Value", "align": "right" },
+      { "key": "name", "label": "Studio", "align": "left" },
+      { "key": "category", "label": "Area", "align": "left" },
+      { "key": "value", "label": "Rating / price", "align": "right" },
       { "key": "delta", "label": "Δ", "align": "right" }
     ],
     "rows": { "path": "/rows" }

@@ -6,51 +6,52 @@ export default function Home() {
     <>
       <SiteNav active="home" />
       <PageHeader
-        eyebrow="CopilotKit × A2UI v0.9"
+        eyebrow="Vantage AI × A2UI v0.9"
         meta={
           <span className="pill">
-            <span className="dot" /> reference build
+            <span className="dot" /> live competitive intel
           </span>
         }
         title={
           <>
-            Agents that compose UI from your <br className="hidden md:inline" />
+            Know the local landscape before you{" "}
+            <br className="hidden md:inline" />
             <span
               className="bg-clip-text text-transparent"
               style={{ backgroundImage: "var(--brand-gradient)" }}
             >
-              own design system.
+              sign the lease.
             </span>
           </>
         }
-        subtitle="Drop a PDF. Watch one agent paint a fixed dashboard from a hand-authored layout, and another agent invent the UI for any follow-up question. Both using the same 21-component catalog."
+        subtitle="Name an area and a business — “a Pilates studio in Shoreditch” — and Vantage AI searches the live web, then paints a competitive-landscape dashboard: who's already there, how they're doing, and whether there's room for you."
       />
 
       <main className="flex-1 max-w-[1320px] mx-auto px-6 py-12 w-full">
         <div className="grid md:grid-cols-2 gap-5">
           <ModeCard
             href="/fixed"
-            badge="01 · FIXED SCHEMA"
-            title="Same layout, your data"
-            blurb="You author the dashboard once. The agent only fills in the numbers. Fast, predictable, brand-locked."
+            badge="01 · MARKET SCAN"
+            title="The landscape at a glance"
+            blurb="Name an area and business. Vantage AI searches the live web and paints a fixed competitive-intelligence dashboard."
             bullets={[
-              "One JSON file is the dashboard layout",
-              "Agent extracts KPIs, trend, share, table rows from the PDF",
-              "Surface streams in instantly. No second LLM call to render",
+              "Live competitor data via Linkup web search",
+              "KPIs, demand curve, service mix, competitor table",
+              "Click a chip to re-scope to a neighbouring area",
             ]}
-            cta="Open the fixed demo"
+            cta="Run a market scan"
           />
           <ModeCard
             href="/dynamic"
-            badge="02 · DYNAMIC SCHEMA"
-            title="Agent picks the shape"
-            blurb="No pre-written layout. The agent answers your question, then a second LLM pass invents the UI from the catalog."
+            badge="02 · DEEP DIVE"
+            title="Ask anything, get the right shape"
+            blurb="Follow up on the landscape. The agent answers your question, then a second LLM pass invents the UI from the catalog."
             bullets={[
               "Pick any of the 21 catalog components, in any combination",
               "Stat for single numbers · LineChart for trends · DataTable for lists",
               "Same brand tokens. The agent never sees CSS",
             ]}
-            cta="Open the dynamic demo"
+            cta="Open the deep dive"
           />
         </div>
 

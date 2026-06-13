@@ -79,9 +79,9 @@ export default function FixedPage() {
                 }}
                 labels={{
                   chatInputPlaceholder:
-                    "Attach a PDF (📎), then ask to render the dashboard…",
+                    "Describe an area + business, e.g. “Pilates studio in Shoreditch”…",
                   welcomeMessageText:
-                    "Attach a PDF using the 📎 button, then ask: “Render the dashboard.”",
+                    "Tell me the area and the business you're scoping — e.g. “I want to open a Pilates studio in Shoreditch” — and I'll map the competition live.",
                 }}
               />
             </div>
@@ -93,10 +93,10 @@ export default function FixedPage() {
             emptyState={
               <CanvasEmptyState
                 title="Canvas is empty"
-                subtitle="Attach a PDF in the chat (📎 in the input toolbar) and ask the agent to render the dashboard. The rendered A2UI surface will fill this canvas."
+                subtitle="Describe an area and the business you're scoping in the chat. Vantage AI searches the live web for competitors and paints a competitive-landscape dashboard into this canvas."
                 hint={
                   <span className="mono text-[11px] uppercase tracking-[0.14em] text-[var(--ink)]">
-                    try: “Render the dashboard.”
+                    try: “Pilates studio in Shoreditch”
                   </span>
                 }
               />

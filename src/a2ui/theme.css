@@ -16,10 +16,10 @@
   --primary-foreground: #ffffff;
   --border: #dbdbe5;
   --input: #dbdbe5;
-  --muted: #f0f0f4;
-  --muted-foreground: #57575b;
-  --accent: #bec2ff;
-  --accent-foreground: #010507;
+  --muted: #eef1f4;
+  --muted-foreground: #4b5563;
+  --accent: #19b89a;
+  --accent-foreground: #04231d;
   --radius: 14px;
 
   font-family:

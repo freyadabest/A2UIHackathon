@@ -1,4 +1,4 @@
-"""Fixed-schema dashboard agent.
+"""Vantage AI — fixed-schema competitive-intelligence dashboard agent.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 CUSTOMIZATION SEAM #5 — Swap the agent flow (fixed-schema dashboard)
@@ -8,12 +8,14 @@ rewrite the layout JSON at agent/src/a2ui/schemas/dashboard.json and the
 domain. The dynamic Q&A flow lives in dynamic_agent.py.
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-The user attaches a PDF in the chat. The deep agent reads the PDF text
-(inlined into the user message by InlineDocumentsMiddleware) and calls
-`render_dashboard` with the structured data extracted in the same model
-pass. The dashboard surface includes an interactive scope-chips strip
-that the agent populates from the document. Clicking a chip fires a
-user action back to the agent, which re-renders with the new scope.
+The user types a target area + business in chat ("I want to open a Pilates
+studio in Shoreditch"). The agent calls `research_market` (live Linkup web
+search) to pull the real competitive landscape, then calls
+`render_dashboard` with structured competitor intel in the same turn. The
+dashboard surface includes an interactive scope-chips strip the agent
+populates from the result. Clicking a chip fires a user action back to the
+agent, which re-renders with the new scope (e.g. a neighbouring area or a
+price/rating ranking).
 """
 from __future__ import annotations
 
@@ -28,6 +30,7 @@ from langchain_google_genai import ChatGoogleGenerativeAI
 from langgraph.checkpoint.memory import MemorySaver
 
 from src.catalog import CATALOG_ID, CATALOG_PROMPT
+from src.research_tools import research_market
 
 SCHEMA_DIR = Path(__file__).parent / "a2ui" / "schemas"
 DASHBOARD_SCHEMA = a2ui.load_schema(SCHEMA_DIR / "dashboard.json")
@@ -76,41 +79,51 @@ def render_dashboard(
     scope_options: list[ScopeOption],
     scope_selected: str,
 ) -> str:
-    """Render the interactive dashboard for the loaded PDF.
+    """Render the competitive-landscape dashboard for the target area.
 
-    Pass data INLINE. Call ONCE per turn.
+    Pass data INLINE, built from the `research_market` result. Call ONCE
+    per turn. Use ONLY businesses/numbers returned by research_market.
 
-    Required shapes:
+    Field meanings for this domain:
+      - eyebrow:  short ALL-CAPS context, e.g. "SHOREDITCH · PILATES".
+      - title:    headline read, e.g. "Competitive landscape".
+      - subtitle: one-sentence market read (the gap for a new entrant).
+
       - kpis: EXACTLY 4 cards. Each {label, value, delta, caption}.
+        Suggested set for a local-business scan:
+          1. Competitors nearby   value="12"      caption="within ~1.5 km"
+          2. Avg rating           value="4.3★"    caption="across nearby studios"
+          3. Avg monthly price    value="£165"    caption="unlimited membership"
+          4. Opportunity score    value="72/100"  caption="premium reformer gap"
 
         STRICT FIELD RULES (very important; the badge breaks if you ignore):
-          * `value`   = the headline number, formatted ("$94,930M", "23.4%",
-                        "1.2M units"). 1–8 chars typically.
-          * `delta`   = JUST the magnitude of change. Format: "+X%", "-X%",
-                        or "" (empty string when there's no comparison).
-                        MAX 8 chars. NEVER prose. NEVER "vs. last quarter"
-                        or "vs. $89,498M". The arrow and color come from
-                        the renderer.
-                        Examples: "+6.1%", "-3%", "+12%", "+$2.4B", ""
-                        Bad:      "↑ vs. $89,498M in Q4 FY23"
-                                  "up 6% YoY"
-                                  "increased from $89,498M"
-          * `caption` = the comparison/context sentence ("vs. $89,498M in
-                        Q4 FY23", "Products $69,958M; Services $24,972M",
-                        "All-time high"). Up to ~80 chars. This is where
-                        the prose goes.
+          * `value`   = the headline figure, formatted ("12", "4.3★",
+                        "£165", "72/100"). 1–8 chars typically.
+          * `delta`   = JUST the magnitude vs. the area benchmark. Format:
+                        "+X%", "-X%", or "" (empty when there's no
+                        comparison). MAX 8 chars. NEVER prose. The arrow
+                        and color come from the renderer.
+                        Examples: "+0.2", "-8%", "+12%", ""
+          * `caption` = the context sentence ("within ~1.5 km",
+                        "vs. 4.1 area avg", "premium reformer gap"). Up to
+                        ~80 chars. This is where the prose goes.
 
-      - trend: 6–12 points. {label, value:number}.
-      - share: 3–5 slices. {label, value:number}.
-      - rows: 5–8 table rows. Same delta rule applies: row.delta is
-        SHORT ("+6%", "-3%", ""). Verbose comparisons belong elsewhere.
+      - trend: 6–12 points {label, value:number}. The DEMAND / capacity
+        curve — e.g. estimated class fill-rate by day of week
+        (Mon..Sun) or by time of day. Higher = busier.
+      - share: 3–5 slices {label, value:number}. The CLASS / SERVICE MIX
+        across competitors (e.g. Reformer, Mat, Barre, Clinical) OR each
+        competitor's share of total reviews.
+      - rows: 5–8 competitor rows {name, category, value, delta}.
+          name=studio, category=area or focus, value=rating or price,
+          delta SHORT ("+8%", "-3%", "" — e.g. review momentum).
       - scope_options: 3–6 chips the user can click to re-scope. Each
-        {label, value}. Example for an Apple earnings PDF:
-          [{label:"Q4 FY24", value:"q4_fy24"},
-           {label:"FY24",    value:"fy24"},
-           {label:"By segment", value:"by_segment"},
-           {label:"By region",  value:"by_region"}]
-        Tailor the options to what THIS document actually supports.
+        {label, value}. Example for a Shoreditch Pilates scan:
+          [{label:"Shoreditch", value:"shoreditch"},
+           {label:"Hoxton",     value:"hoxton"},
+           {label:"By rating",  value:"by_rating"},
+           {label:"By price",   value:"by_price"}]
+        Tailor the options to the areas/facets THIS market supports.
       - scope_selected: the `value` of the currently active option.
     """
     payload = {
@@ -133,58 +146,66 @@ def render_dashboard(
 
 
 SYSTEM_PROMPT = f"""\
-You build and maintain a live dashboard from the user's PDF.
+You are Vantage AI. You help someone deciding where to open a local
+business understand the competitive landscape of an area, and you build a
+live intelligence dashboard for them.
 
 ## How a turn works
 
 The user may do three things on any turn:
-  A) Attach a new PDF + chat (initial render).
-  B) Send a chat message ("re-render focused on energy storage",
-     "what was operating margin?", "compare last quarter").
+  A) Describe a target area + business ("I want to open a Pilates studio
+     in Shoreditch", "coffee shop in Peckham"). This is the initial scan.
+  B) Send a follow-up chat message ("how do they compare on price?",
+     "is there room for a premium offering?").
   C) Click a scope chip on the dashboard. The runtime delivers this as a
      tool result `log_a2ui_event` with content like:
         User performed action "select_chip" on surface "pdf-dashboard".
-        Context: {{"value": "fy24", "label": "Scope"}}
-
-In every case, decide whether to re-render the dashboard, answer in chat,
-or both.
+        Context: {{"value": "hoxton", "label": "Scope"}}
 
 ## The render contract
 
-When you render, call `render_dashboard(...)` ONCE with structured data:
-  - 4 KPIs, 6–12 trend points, 3–5 share slices, 5–8 rows.
-  - `scope_options`: 3–6 chips tailored to THIS PDF. Examples of good
-    chip sets:
-      - Apple Q4 PDF → [Q4 FY24, FY24, By segment, By region, By category]
-      - Tesla Q3 PDF → [Q3 '24, By model, By region, Automotive vs Energy,
-                       Trailing 4 quarters]
-  - `scope_selected`: which chip is active. Default to the most natural
-    starting scope for the document. After a chip click, set this to the
-    clicked value.
+To build or re-scope the dashboard:
+  1. Call `research_market(location=<area>, business_type=<business>)`
+     EXACTLY ONCE to pull the live competitive landscape. Infer the
+     location and business_type from the user's message (or from the
+     active scope chip on a re-scope).
+  2. Then call `render_dashboard(...)` EXACTLY ONCE, mapping the
+     research result into the fixed shape:
+       - 4 KPIs (competitors nearby, avg rating, avg price, opportunity
+         score), 6–12 trend points (the demand / capacity curve), 3–5
+         share slices (class or service mix), 5–8 competitor rows.
+       - `scope_options`: 3–6 chips tailored to THIS market — usually a
+         couple of nearby areas plus facets like "By rating" / "By price".
+       - `scope_selected`: the active chip. Default to the area the user
+         named. After a chip click, set it to the clicked value.
 
-When the user (or a chip click) asks to change scope:
-  - Re-extract the data for the new scope from the PDF text.
-  - Re-call render_dashboard with the SAME surfaceId so the canvas
-    updates in place. The scope_selected reflects the new active chip.
+When the user (or a chip click) asks to change scope (a different area or
+ranking), re-run research_market for the new scope, then re-call
+render_dashboard with the SAME surfaceId so the canvas updates in place.
 
 ## Hard rules
 
-- Render the dashboard whenever the user attaches a PDF (initial), asks
-  to re-render in any way, or clicks a chip.
-- Call `render_dashboard` AT MOST ONCE per turn. Never twice.
-- Use ONLY numbers that actually appear in the document.
+- Render the dashboard whenever the user names an area+business (initial),
+  asks to re-scope, or clicks a chip.
+- Call `research_market` AT MOST ONCE and `render_dashboard` AT MOST ONCE
+  per turn. Never twice.
+- Use ONLY businesses and numbers returned by `research_market`. Never
+  invent competitors. If research_market returns status "empty" or an
+  error/note, render a dashboard with what you have and put the note in
+  the subtitle, and tell the user in one short sentence (e.g. ask them to
+  set LINKUP_API_KEY if that's the issue).
 - If the user asks an analytical question that does NOT require a layout
-  change (e.g. "what was operating margin?"), answer in chat without
-  re-rendering. 1–3 sentences max. Cite the number.
-- If the user wants to invent a brand-new visualization not covered by
-  the fixed schema (e.g. "show a sankey diagram"), tell them to use the
+  change (e.g. "which one is cheapest?"), answer in chat from the latest
+  research result without re-rendering. 1–3 sentences max. Cite the name.
+- If the user wants a brand-new visualization not covered by the fixed
+  schema (e.g. "plot price vs rating as a scatter"), tell them to use the
   Dynamic tab.
 
 ## Chat tone
 
-Be helpful, brief, conversational. After the first render, you can
-suggest one or two follow-ups the user might click ("Tap *FY24* for the
-full-year view" or "Want me to break it down by segment?"). Don't list
+Be helpful, brief, conversational. After the first render, suggest one or
+two follow-ups the user might click ("Tap *Hoxton* to compare the next
+neighbourhood" or "Want the competitors ranked by price?"). Don't list
 more than two suggestions.
 
 {CATALOG_PROMPT}
@@ -221,7 +242,7 @@ def build_fixed_agent():
 
     return create_agent(
         model=_build_model(),
-        tools=[render_dashboard],
+        tools=[research_market, render_dashboard],
         # CopilotKitMiddleware forwards frontend tools + agent context (e.g.
         # useAgentContext payloads) to the LLM.
         middleware=[CopilotKitMiddleware()],

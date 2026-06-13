@@ -103,7 +103,7 @@ function parseSemverMinor(v: string): { major: number; minor: number } | null {
   let pyVer: string | null = null;
   let source = "uv";
 
-  const uvOut = tryExec("uv python find 3.12 2>/dev/null");
+  const uvOut = tryExec('uv python find ">=3.12"');
   if (uvOut) {
     // Got an interpreter path. Get its version.
     const ver = tryExec(`${uvOut} --version`);

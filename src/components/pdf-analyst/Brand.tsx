@@ -14,7 +14,7 @@ export function Logo({ size = 22 }: { size?: number }) {
   return (
     <Image
       src="/brand/logo-full.svg"
-      alt="CopilotKit"
+      alt="Vantage AI"
       width={size * 5}
       height={size}
       priority
@@ -30,8 +30,8 @@ export function SiteNav({
 }) {
   const links: Array<{ href: string; label: string; key: typeof active }> = [
     { href: "/", label: "Overview", key: "home" },
-    { href: "/fixed", label: "Fixed schema", key: "fixed" },
-    { href: "/dynamic", label: "Dynamic schema", key: "dynamic" },
+    { href: "/fixed", label: "Market scan", key: "fixed" },
+    { href: "/dynamic", label: "Deep dive", key: "dynamic" },
     { href: "/catalog", label: "Catalog", key: "catalog" },
   ];
   return (

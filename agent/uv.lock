@@ -47,6 +47,7 @@ dependencies = [
     { name = "langchain-core" },
     { name = "langchain-google-genai" },
     { name = "langgraph" },
+    { name = "linkup-sdk" },
     { name = "python-dotenv" },
     { name = "uvicorn" },
 ]
@@ -60,6 +61,7 @@ requires-dist = [
     { name = "langchain-core", specifier = "==1.4.0" },
     { name = "langchain-google-genai", specifier = ">=4.2.4" },
     { name = "langgraph", specifier = "==1.2.1" },
+    { name = "linkup-sdk", specifier = ">=0.18.2" },
     { name = "python-dotenv", specifier = ">=1.2.2" },
     { name = "uvicorn", specifier = ">=0.48.0" },
 ]
@@ -534,6 +536,19 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/17/eb/8883d1158c743d0aac350f09df7880714d27283497e8c80bb9fe3480f165/langsmith-0.8.5.tar.gz", hash = "sha256:3615243d99c12f4047f13042bdc05a373dce232d106a6511b3ca7b48c5af1c2c", size = 4462348, upload-time = "2026-05-15T21:31:41.093Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/23/85/968c88a63e32a59b3e5c68afd2fe114ce0708a125db0be1a85efc25fb2ea/langsmith-0.8.5-py3-none-any.whl", hash = "sha256:efc779f9d450dcaf9d97bc8894f4926276509d6e730e05289af9a64debce06ae", size = 399564, upload-time = "2026-05-15T21:31:39.046Z" },
+]
+
+[[package]]
+name = "linkup-sdk"
+version = "0.18.2"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "httpx" },
+    { name = "pydantic" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/21/98/ecab9af0ed6facacd5109a34679407a617b970e2c0cf4fa854efe19e74ae/linkup_sdk-0.18.2.tar.gz", hash = "sha256:a862b1e6d7dee0386646769e7195b075661100dbe14f9e75d1d362a16aedd48b", size = 196183, upload-time = "2026-06-04T17:12:03.755Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/98/ec/22653e2f67d385bbc681f949f53b9da87e777df251305deda01115538ae3/linkup_sdk-0.18.2-py3-none-any.whl", hash = "sha256:a63ac60d4b0676b39b36f525cecac2b6a52ca4951d8a344e5d2921098da6c840", size = 20767, upload-time = "2026-06-04T17:12:02.465Z" },
 ]
 
 [[package]]
