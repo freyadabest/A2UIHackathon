@@ -1,0 +1,10 @@
+{
+  "python_version": "3.12",
+  "dockerfile_lines": [],
+  "dependencies": ["."],
+  "package_manager": "uv",
+  "graphs": {
+    "sample_a2a_subagent": "./main.py:graph"
+  },
+  "env": "../../.env"
+}

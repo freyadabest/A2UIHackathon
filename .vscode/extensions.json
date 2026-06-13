@@ -1,0 +1,12 @@
+{
+  "$schema-note": "Recommended extensions for the CopilotKit A2UI hackathon starter. VS Code prompts hackers to install these on first open of the workspace.",
+  "recommendations": [
+    "TODO: CopilotKit A2UI catalog preview extension — search VS Code Marketplace for 'CopilotKit A2UI' and update this list once a canonical extension ID is published. Fallback: manual workflow via the A2UI Composer (https://a2ui-composer.ag-ui.com/).",
+    "esbenp.prettier-vscode",
+    "ms-python.python",
+    "bradlc.vscode-tailwindcss",
+    "dbaeumer.vscode-eslint",
+    "ms-python.vscode-pylance"
+  ],
+  "unwantedRecommendations": []
+}

@@ -1,0 +1,12 @@
+{
+  "id": "legal-contract-review",
+  "name": "Contract Review Copilot",
+  "description": "AI flags risky clauses with margin notes and redlines on a paper-styled document.",
+  "route": "/other-examples/legal-contract-review",
+  "graphId": "legal_review_agent",
+  "agentName": "legal",
+  "catalogId": "copilotkit://legal-paper-catalog",
+  "screenshot": "screenshot.png",
+  "tags": ["legal", "document-review", "redline"],
+  "status": "wip"
+}

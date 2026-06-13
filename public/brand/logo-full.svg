@@ -1,0 +1,24 @@
+<svg viewBox="0 0 1040 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <title>Vantage AI</title>
+  <defs>
+    <linearGradient id="vantageMark" x1="0" y1="200" x2="170" y2="20" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#6d5ef0"/>
+      <stop offset="0.5" stop-color="#19b89a"/>
+      <stop offset="1" stop-color="#ff9a3d"/>
+    </linearGradient>
+  </defs>
+  <g transform="translate(8 22)">
+    <!-- Vantage peak mark: ascending sightline to a high vantage point -->
+    <path d="M14 150 L70 40 L106 96 L132 56 L160 86"
+          stroke="url(#vantageMark)" stroke-width="18"
+          stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+    <circle cx="160" cy="86" r="12" fill="url(#vantageMark)"/>
+  </g>
+  <g transform="translate(212 0)" fill="#010507">
+    <text x="0" y="128" font-family="'Plus Jakarta Sans', 'Segoe UI', system-ui, sans-serif"
+          font-size="118" font-weight="700" letter-spacing="-4">Vantage</text>
+  </g>
+  <text x="760" y="128" fill="#19b89a"
+        font-family="'Plus Jakarta Sans', 'Segoe UI', system-ui, sans-serif"
+        font-size="118" font-weight="700" letter-spacing="-2">AI</text>
+</svg>

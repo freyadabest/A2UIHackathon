@@ -1,0 +1,1041 @@
+{
+  "$schema": "https://a2ui.org/specification/v0.9-a2ui/",
+  "version": "1.0",
+  "description": "Offline A2UI envelope fixtures. Two indices: byPrompt (legacy prompt-name keys, used by demo scripts) and bySurface (per-surface lookup keyed by surfaceId, used by OFFLINE=1 routing per plan \u00a76.6).",
+  "byPrompt": {
+    "flights_search": [
+      {
+        "version": "v0.9",
+        "createSurface": {
+          "surfaceId": "flight-search-results",
+          "catalogId": "copilotkit://app-dashboard-catalog"
+        }
+      },
+      {
+        "version": "v0.9",
+        "updateComponents": {
+          "surfaceId": "flight-search-results",
+          "components": [
+            {
+              "id": "root",
+              "component": "Row",
+              "children": {
+                "componentId": "flight-card",
+                "path": "/flights"
+              },
+              "gap": 16
+            },
+            {
+              "id": "flight-card",
+              "component": "FlightCard",
+              "airline": {
+                "path": "airline"
+              },
+              "airlineLogo": {
+                "path": "airlineLogo"
+              },
+              "flightNumber": {
+                "path": "flightNumber"
+              },
+              "origin": {
+                "path": "origin"
+              },
+              "destination": {
+                "path": "destination"
+              },
+              "date": {
+                "path": "date"
+              },
+              "departureTime": {
+                "path": "departureTime"
+              },
+              "arrivalTime": {
+                "path": "arrivalTime"
+              },
+              "duration": {
+                "path": "duration"
+              },
+              "status": {
+                "path": "status"
+              },
+              "price": {
+                "path": "price"
+              },
+              "action": {
+                "event": {
+                  "name": "book_flight",
+                  "context": {
+                    "flightNumber": {
+                      "path": "flightNumber"
+                    },
+                    "origin": {
+                      "path": "origin"
+                    },
+                    "destination": {
+                      "path": "destination"
+                    },
+                    "price": {
+                      "path": "price"
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        }
+      },
+      {
+        "version": "v0.9",
+        "updateDataModel": {
+          "surfaceId": "flight-search-results",
+          "path": "/",
+          "value": {
+            "flights": [
+              {
+                "id": "1",
+                "airline": "United Airlines",
+                "airlineLogo": "https://www.google.com/s2/favicons?domain=united.com&sz=128",
+                "flightNumber": "UA543",
+                "origin": "SFO",
+                "destination": "JFK",
+                "date": "Tue, Mar 18",
+                "departureTime": "08:00 AM",
+                "arrivalTime": "04:30 PM",
+                "duration": "5h 30m",
+                "status": "On Time",
+                "statusIcon": "https://placehold.co/12/22c55e/22c55e.png",
+                "price": "$289"
+              },
+              {
+                "id": "2",
+                "airline": "Delta Airlines",
+                "airlineLogo": "https://www.google.com/s2/favicons?domain=delta.com&sz=128",
+                "flightNumber": "DL190",
+                "origin": "SFO",
+                "destination": "JFK",
+                "date": "Tue, Mar 18",
+                "departureTime": "09:15 AM",
+                "arrivalTime": "05:45 PM",
+                "duration": "5h 30m",
+                "status": "On Time",
+                "statusIcon": "https://placehold.co/12/22c55e/22c55e.png",
+                "price": "$320"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "dashboard_revenue": [
+      {
+        "version": "v0.9",
+        "createSurface": {
+          "surfaceId": "sales_dashboard",
+          "catalogId": "copilotkit://app-dashboard-catalog"
+        }
+      },
+      {
+        "version": "v0.9",
+        "updateComponents": {
+          "surfaceId": "sales_dashboard",
+          "components": [
+            {
+              "children": "title,revenue_chart",
+              "type": "Column",
+              "id": "root"
+            },
+            {
+              "id": "title",
+              "type": "Text",
+              "text": "Sales Dashboard - Revenue by Category",
+              "style": "{\"paddingBottom\": \"16px\"}",
+              "variant": "headlineSmall"
+            },
+            {
+              "data": "[{\"category\": \"Electronics\", \"revenue\": 120000}, {\"category\": \"Apparel\", \"revenue\": 85000}, {\"category\": \"Home Goods\", \"revenue\": 60000}, {\"category\": \"Books\", \"revenue\": 30000}, {\"category\": \"Toys\", \"revenue\": 45000}]",
+              "options": "{\"title\": \"Revenue by Category\", \"x_axis_field\": \"category\", \"y_axis_field\": \"revenue\", \"x_axis_label\": \"Category\", \"y_axis_label\": \"Revenue ($\")\"}",
+              "chartType": "BAR",
+              "id": "revenue_chart",
+              "type": "Chart"
+            }
+          ]
+        }
+      }
+    ],
+    "shopping_search": [
+      {
+        "version": "v0.9",
+        "createSurface": {
+          "surfaceId": "product-search-results",
+          "catalogId": "https://a2ui.org/specification/v0_9/basic_catalog.json"
+        }
+      },
+      {
+        "version": "v0.9",
+        "updateComponents": {
+          "surfaceId": "product-search-results",
+          "components": [
+            {
+              "id": "root",
+              "component": "List",
+              "direction": "horizontal",
+              "gap": 16,
+              "children": {
+                "componentId": "product-card",
+                "path": "/products"
+              }
+            },
+            {
+              "id": "product-card",
+              "component": "Card",
+              "children": [
+                "product-card-col"
+              ]
+            },
+            {
+              "id": "product-card-col",
+              "component": "Column",
+              "gap": 12,
+              "children": [
+                "product-card-image",
+                "product-card-name",
+                "product-card-price",
+                "product-card-meta",
+                "product-card-button"
+              ]
+            },
+            {
+              "id": "product-card-image",
+              "component": "Image",
+              "variant": "smallFeature",
+              "src": {
+                "path": "imageUrl"
+              },
+              "alt": {
+                "path": "name"
+              }
+            },
+            {
+              "id": "product-card-name",
+              "component": "Text",
+              "variant": "h3",
+              "text": {
+                "path": "name"
+              }
+            },
+            {
+              "id": "product-card-price",
+              "component": "Text",
+              "variant": "h2",
+              "text": {
+                "path": "price"
+              }
+            },
+            {
+              "id": "product-card-meta",
+              "component": "Row",
+              "justify": "spaceBetween",
+              "children": [
+                "product-card-rating",
+                "product-card-category"
+              ]
+            },
+            {
+              "id": "product-card-rating",
+              "component": "Text",
+              "variant": "caption",
+              "text": {
+                "path": "rating"
+              }
+            },
+            {
+              "id": "product-card-category",
+              "component": "Text",
+              "variant": "caption",
+              "text": {
+                "path": "category"
+              }
+            },
+            {
+              "id": "product-card-button",
+              "component": "Button",
+              "variant": "primary",
+              "children": [
+                "product-card-button-text"
+              ],
+              "action": {
+                "event": {
+                  "name": "add_to_cart",
+                  "context": {
+                    "productId": {
+                      "path": "id"
+                    },
+                    "name": {
+                      "path": "name"
+                    },
+                    "price": {
+                      "path": "price"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "id": "product-card-button-text",
+              "component": "Text",
+              "text": "Add to cart"
+            }
+          ]
+        }
+      },
+      {
+        "version": "v0.9",
+        "updateDataModel": {
+          "surfaceId": "product-search-results",
+          "path": "/",
+          "value": {
+            "products": [
+              {
+                "id": "sneaker-001",
+                "name": "Nimbus Stride 8",
+                "price": "$129",
+                "rating": "4.7 stars",
+                "category": "Running",
+                "imageUrl": "https://placehold.co/256x256/4f46e5/ffffff?text=Nimbus"
+              },
+              {
+                "id": "sneaker-004",
+                "name": "Glide Cushion 4",
+                "price": "$109",
+                "rating": "4.4 stars",
+                "category": "Running",
+                "imageUrl": "https://placehold.co/256x256/2563eb/ffffff?text=Glide"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "shopping_dashboard": [
+      {
+        "version": "v0.9",
+        "createSurface": {
+          "surfaceId": "sales_by_category_march_dashboard",
+          "catalogId": "copilotkit://app-dashboard-catalog"
+        }
+      },
+      {
+        "version": "v0.9",
+        "updateComponents": {
+          "surfaceId": "sales_by_category_march_dashboard",
+          "components": [
+            {
+              "label": "March Sales Dashboard",
+              "style": "dashboard",
+              "children": "Category Sales - March 2026",
+              "id": "root",
+              "type": "Container"
+            },
+            {
+              "xAxis": "category",
+              "barOrientation": "vertical",
+              "title": "Sales by Category for March 2026",
+              "style": "chart",
+              "yAxis": "sales",
+              "dataPointer": "/categorySales",
+              "stackBars": false,
+              "type": "BarChart",
+              "layout": "vertical",
+              "id": "march_sales_chart"
+            }
+          ]
+        }
+      },
+      {
+        "version": "v0.9",
+        "updateDataModel": {
+          "surfaceId": "sales_by_category_march_dashboard",
+          "path": "/",
+          "value": {
+            "categorySales": "[{\"category\": \"Running\", \"sales\": 11610}, {\"category\": \"Trail\", \"sales\": 6556}, {\"category\": \"Lifestyle\", \"sales\": 5785}, {\"category\": \"Outerwear\", \"sales\": 10250}, {\"category\": \"Bags\", \"sales\": 5556}, {\"category\": \"Watches\", \"sales\": 9618}, {\"category\": \"Racing\", \"sales\": 6265}]"
+          }
+        }
+      }
+    ]
+  },
+  "bySurface": {
+    "flight-search-results": [
+      {
+        "version": "v0.9",
+        "createSurface": {
+          "surfaceId": "flight-search-results",
+          "catalogId": "copilotkit://app-dashboard-catalog"
+        }
+      },
+      {
+        "version": "v0.9",
+        "updateComponents": {
+          "surfaceId": "flight-search-results",
+          "components": [
+            {
+              "id": "root",
+              "component": "Row",
+              "children": {
+                "componentId": "flight-card",
+                "path": "/flights"
+              },
+              "gap": 16
+            },
+            {
+              "id": "flight-card",
+              "component": "FlightCard",
+              "airline": {
+                "path": "airline"
+              },
+              "airlineLogo": {
+                "path": "airlineLogo"
+              },
+              "flightNumber": {
+                "path": "flightNumber"
+              },
+              "origin": {
+                "path": "origin"
+              },
+              "destination": {
+                "path": "destination"
+              },
+              "date": {
+                "path": "date"
+              },
+              "departureTime": {
+                "path": "departureTime"
+              },
+              "arrivalTime": {
+                "path": "arrivalTime"
+              },
+              "duration": {
+                "path": "duration"
+              },
+              "status": {
+                "path": "status"
+              },
+              "price": {
+                "path": "price"
+              },
+              "action": {
+                "event": {
+                  "name": "book_flight",
+                  "context": {
+                    "flightNumber": {
+                      "path": "flightNumber"
+                    },
+                    "origin": {
+                      "path": "origin"
+                    },
+                    "destination": {
+                      "path": "destination"
+                    },
+                    "price": {
+                      "path": "price"
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        }
+      },
+      {
+        "version": "v0.9",
+        "updateDataModel": {
+          "surfaceId": "flight-search-results",
+          "path": "/",
+          "value": {
+            "flights": [
+              {
+                "id": "1",
+                "airline": "United Airlines",
+                "airlineLogo": "https://www.google.com/s2/favicons?domain=united.com&sz=128",
+                "flightNumber": "UA543",
+                "origin": "SFO",
+                "destination": "JFK",
+                "date": "Tue, Mar 18",
+                "departureTime": "08:00 AM",
+                "arrivalTime": "04:30 PM",
+                "duration": "5h 30m",
+                "status": "On Time",
+                "statusIcon": "https://placehold.co/12/22c55e/22c55e.png",
+                "price": "$289"
+              },
+              {
+                "id": "2",
+                "airline": "Delta Airlines",
+                "airlineLogo": "https://www.google.com/s2/favicons?domain=delta.com&sz=128",
+                "flightNumber": "DL190",
+                "origin": "SFO",
+                "destination": "JFK",
+                "date": "Tue, Mar 18",
+                "departureTime": "09:15 AM",
+                "arrivalTime": "05:45 PM",
+                "duration": "5h 30m",
+                "status": "On Time",
+                "statusIcon": "https://placehold.co/12/22c55e/22c55e.png",
+                "price": "$320"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "sales_dashboard": [
+      {
+        "version": "v0.9",
+        "createSurface": {
+          "surfaceId": "sales_dashboard",
+          "catalogId": "copilotkit://app-dashboard-catalog"
+        }
+      },
+      {
+        "version": "v0.9",
+        "updateComponents": {
+          "surfaceId": "sales_dashboard",
+          "components": [
+            {
+              "children": "title,revenue_chart",
+              "type": "Column",
+              "id": "root"
+            },
+            {
+              "id": "title",
+              "type": "Text",
+              "text": "Sales Dashboard - Revenue by Category",
+              "style": "{\"paddingBottom\": \"16px\"}",
+              "variant": "headlineSmall"
+            },
+            {
+              "data": "[{\"category\": \"Electronics\", \"revenue\": 120000}, {\"category\": \"Apparel\", \"revenue\": 85000}, {\"category\": \"Home Goods\", \"revenue\": 60000}, {\"category\": \"Books\", \"revenue\": 30000}, {\"category\": \"Toys\", \"revenue\": 45000}]",
+              "options": "{\"title\": \"Revenue by Category\", \"x_axis_field\": \"category\", \"y_axis_field\": \"revenue\", \"x_axis_label\": \"Category\", \"y_axis_label\": \"Revenue ($\")\"}",
+              "chartType": "BAR",
+              "id": "revenue_chart",
+              "type": "Chart"
+            }
+          ]
+        }
+      }
+    ],
+    "product-search-results": [
+      {
+        "version": "v0.9",
+        "createSurface": {
+          "surfaceId": "product-search-results",
+          "catalogId": "https://a2ui.org/specification/v0_9/basic_catalog.json"
+        }
+      },
+      {
+        "version": "v0.9",
+        "updateComponents": {
+          "surfaceId": "product-search-results",
+          "components": [
+            {
+              "id": "root",
+              "component": "List",
+              "direction": "horizontal",
+              "gap": 16,
+              "children": {
+                "componentId": "product-card",
+                "path": "/products"
+              }
+            },
+            {
+              "id": "product-card",
+              "component": "Card",
+              "children": [
+                "product-card-col"
+              ]
+            },
+            {
+              "id": "product-card-col",
+              "component": "Column",
+              "gap": 12,
+              "children": [
+                "product-card-image",
+                "product-card-name",
+                "product-card-price",
+                "product-card-meta",
+                "product-card-button"
+              ]
+            },
+            {
+              "id": "product-card-image",
+              "component": "Image",
+              "variant": "smallFeature",
+              "src": {
+                "path": "imageUrl"
+              },
+              "alt": {
+                "path": "name"
+              }
+            },
+            {
+              "id": "product-card-name",
+              "component": "Text",
+              "variant": "h3",
+              "text": {
+                "path": "name"
+              }
+            },
+            {
+              "id": "product-card-price",
+              "component": "Text",
+              "variant": "h2",
+              "text": {
+                "path": "price"
+              }
+            },
+            {
+              "id": "product-card-meta",
+              "component": "Row",
+              "justify": "spaceBetween",
+              "children": [
+                "product-card-rating",
+                "product-card-category"
+              ]
+            },
+            {
+              "id": "product-card-rating",
+              "component": "Text",
+              "variant": "caption",
+              "text": {
+                "path": "rating"
+              }
+            },
+            {
+              "id": "product-card-category",
+              "component": "Text",
+              "variant": "caption",
+              "text": {
+                "path": "category"
+              }
+            },
+            {
+              "id": "product-card-button",
+              "component": "Button",
+              "variant": "primary",
+              "children": [
+                "product-card-button-text"
+              ],
+              "action": {
+                "event": {
+                  "name": "add_to_cart",
+                  "context": {
+                    "productId": {
+                      "path": "id"
+                    },
+                    "name": {
+                      "path": "name"
+                    },
+                    "price": {
+                      "path": "price"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "id": "product-card-button-text",
+              "component": "Text",
+              "text": "Add to cart"
+            }
+          ]
+        }
+      },
+      {
+        "version": "v0.9",
+        "updateDataModel": {
+          "surfaceId": "product-search-results",
+          "path": "/",
+          "value": {
+            "products": [
+              {
+                "id": "sneaker-001",
+                "name": "Nimbus Stride 8",
+                "price": "$129",
+                "rating": "4.7 stars",
+                "category": "Running",
+                "imageUrl": "https://placehold.co/256x256/4f46e5/ffffff?text=Nimbus"
+              },
+              {
+                "id": "sneaker-004",
+                "name": "Glide Cushion 4",
+                "price": "$109",
+                "rating": "4.4 stars",
+                "category": "Running",
+                "imageUrl": "https://placehold.co/256x256/2563eb/ffffff?text=Glide"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "sales_by_category_march_dashboard": [
+      {
+        "version": "v0.9",
+        "createSurface": {
+          "surfaceId": "sales_by_category_march_dashboard",
+          "catalogId": "copilotkit://app-dashboard-catalog"
+        }
+      },
+      {
+        "version": "v0.9",
+        "updateComponents": {
+          "surfaceId": "sales_by_category_march_dashboard",
+          "components": [
+            {
+              "label": "March Sales Dashboard",
+              "style": "dashboard",
+              "children": "Category Sales - March 2026",
+              "id": "root",
+              "type": "Container"
+            },
+            {
+              "xAxis": "category",
+              "barOrientation": "vertical",
+              "title": "Sales by Category for March 2026",
+              "style": "chart",
+              "yAxis": "sales",
+              "dataPointer": "/categorySales",
+              "stackBars": false,
+              "type": "BarChart",
+              "layout": "vertical",
+              "id": "march_sales_chart"
+            }
+          ]
+        }
+      },
+      {
+        "version": "v0.9",
+        "updateDataModel": {
+          "surfaceId": "sales_by_category_march_dashboard",
+          "path": "/",
+          "value": {
+            "categorySales": "[{\"category\": \"Running\", \"sales\": 11610}, {\"category\": \"Trail\", \"sales\": 6556}, {\"category\": \"Lifestyle\", \"sales\": 5785}, {\"category\": \"Outerwear\", \"sales\": 10250}, {\"category\": \"Bags\", \"sales\": 5556}, {\"category\": \"Watches\", \"sales\": 9618}, {\"category\": \"Racing\", \"sales\": 6265}]"
+          }
+        }
+      }
+    ],
+    "contract-review": [
+      {
+        "version": "v0.9",
+        "createSurface": {
+          "surfaceId": "contract-review",
+          "catalogId": "copilotkit://legal-paper-catalog"
+        }
+      },
+      {
+        "version": "v0.9",
+        "updateComponents": {
+          "surfaceId": "contract-review",
+          "components": [
+            {
+              "id": "root",
+              "component": "LegalDocumentShell",
+              "title": {
+                "path": "/title"
+              },
+              "parties": {
+                "path": "/parties"
+              },
+              "effectiveDate": {
+                "path": "/effectiveDate"
+              },
+              "verdictChild": "verdict",
+              "children": {
+                "componentId": "clause-item",
+                "path": "/clauses"
+              }
+            },
+            {
+              "id": "verdict",
+              "component": "Verdict",
+              "headline": {
+                "path": "/verdict/headline"
+              },
+              "summary": {
+                "path": "/verdict/summary"
+              },
+              "tone": {
+                "path": "/verdict/tone"
+              }
+            },
+            {
+              "id": "clause-item",
+              "component": "Clause",
+              "number": {
+                "path": "number"
+              },
+              "heading": {
+                "path": "heading"
+              },
+              "body": {
+                "path": "body"
+              },
+              "risk": {
+                "path": "risk"
+              },
+              "marginChild": {
+                "componentId": "margin-note-item",
+                "path": "marginNotes"
+              },
+              "redlineChildren": {
+                "componentId": "redline-item",
+                "path": "redlines"
+              }
+            },
+            {
+              "id": "redline-item",
+              "component": "Redline",
+              "redlineId": {
+                "path": "id"
+              },
+              "original": {
+                "path": "original"
+              },
+              "suggested": {
+                "path": "suggested"
+              },
+              "rationale": {
+                "path": "rationale"
+              },
+              "status": {
+                "path": "status"
+              },
+              "action": {
+                "componentId": "redline-action-bar",
+                "path": ""
+              }
+            },
+            {
+              "id": "redline-action-bar",
+              "component": "AcceptRejectBar",
+              "redlineId": {
+                "path": "id"
+              },
+              "acceptAction": {
+                "event": {
+                  "name": "redline_accepted",
+                  "context": {
+                    "redlineId": {
+                      "path": "id"
+                    },
+                    "clauseId": {
+                      "path": "clauseId"
+                    }
+                  }
+                }
+              },
+              "rejectAction": {
+                "event": {
+                  "name": "redline_rejected",
+                  "context": {
+                    "redlineId": {
+                      "path": "id"
+                    },
+                    "clauseId": {
+                      "path": "clauseId"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "id": "margin-note-item",
+              "component": "MarginNote",
+              "body": {
+                "path": "body"
+              },
+              "severity": {
+                "path": "severity"
+              },
+              "citation": {
+                "componentId": "citation-item",
+                "path": "citation"
+              }
+            },
+            {
+              "id": "citation-item",
+              "component": "Citation",
+              "label": {
+                "path": "label"
+              },
+              "url": {
+                "path": "url"
+              },
+              "pinpoint": {
+                "path": "pinpoint"
+              }
+            }
+          ]
+        }
+      },
+      {
+        "version": "v0.9",
+        "updateDataModel": {
+          "surfaceId": "contract-review",
+          "path": "/",
+          "value": {
+            "title": "Mutual Non-Disclosure Agreement",
+            "parties": [
+              "Acme Corp.",
+              "Beta Labs Ltd."
+            ],
+            "effectiveDate": "2026-03-18",
+            "verdict": {
+              "headline": "Two material issues \u2014 review before signing.",
+              "summary": "The IP assignment clause is one-sided and the indemnification cap is missing. Suggested redlines attached.",
+              "tone": "negative"
+            },
+            "clauses": [
+              {
+                "id": "1",
+                "number": "1",
+                "heading": "Definitions",
+                "body": "\"Confidential Information\" means all non-public information disclosed by one party to the other, in any form, that is identified as confidential at the time of disclosure or that a reasonable person would understand to be confidential.",
+                "risk": null,
+                "marginNotes": [],
+                "redlines": []
+              },
+              {
+                "id": "2",
+                "number": "2",
+                "heading": "Obligations of Receiving Party",
+                "body": "The Receiving Party shall use Confidential Information solely for the Purpose and shall protect it using at least the same degree of care it uses for its own confidential information of similar importance, and in no event less than reasonable care.",
+                "risk": null,
+                "marginNotes": [],
+                "redlines": []
+              },
+              {
+                "id": "3",
+                "number": "3",
+                "heading": "Permitted Disclosures",
+                "body": "Receiving Party may disclose Confidential Information to its employees, officers, and professional advisors who have a need to know and who are bound by confidentiality obligations no less restrictive than those herein.",
+                "risk": null,
+                "marginNotes": [
+                  {
+                    "body": "Standard need-to-know language. No action required.",
+                    "severity": "info",
+                    "citation": null
+                  }
+                ],
+                "redlines": []
+              },
+              {
+                "id": "4",
+                "number": "4",
+                "heading": "Term",
+                "body": "This Agreement shall remain in effect for three (3) years from the Effective Date, after which the obligations of confidentiality shall continue for an additional two (2) years.",
+                "risk": "low",
+                "marginNotes": [],
+                "redlines": []
+              },
+              {
+                "id": "5",
+                "number": "5",
+                "heading": "Indemnification",
+                "body": "Each party shall indemnify the other against any losses arising from a breach of this Agreement.",
+                "risk": "medium",
+                "marginNotes": [
+                  {
+                    "body": "No liability cap. Recommend adding a cap equal to fees paid in the prior 12 months.",
+                    "severity": "warning",
+                    "citation": {
+                      "label": "ABA Model Indemnity Clause \u00a7 4.2",
+                      "url": "https://www.americanbar.org/groups/business_law/",
+                      "pinpoint": "\u00a7 4.2(b)"
+                    }
+                  }
+                ],
+                "redlines": [
+                  {
+                    "id": "rl-002",
+                    "clauseId": "5",
+                    "original": "Each party shall indemnify the other against any losses arising from a breach of this Agreement.",
+                    "suggested": "Each party shall indemnify the other against direct losses arising from a breach of this Agreement, provided that each party's aggregate liability under this Agreement shall not exceed the fees paid by the Disclosing Party in the twelve (12) months preceding the claim.",
+                    "rationale": "Adds a liability cap (industry standard for NDAs of this type).",
+                    "status": "pending"
+                  }
+                ]
+              },
+              {
+                "id": "5.2",
+                "number": "5.2",
+                "heading": "IP Assignment",
+                "body": "all derivative works shall vest exclusively in Disclosing Party",
+                "risk": "high",
+                "marginNotes": [
+                  {
+                    "body": "One-sided IP assignment. Receiving Party's independent work product would also vest with Disclosing Party \u2014 almost certainly unintended.",
+                    "severity": "critical",
+                    "citation": null
+                  }
+                ],
+                "redlines": [
+                  {
+                    "id": "rl-001",
+                    "clauseId": "5.2",
+                    "original": "all derivative works shall vest exclusively in Disclosing Party",
+                    "suggested": "derivative works created independently by Receiving Party shall remain Receiving Party's property",
+                    "rationale": "Carves out independently developed work. This is the standard mutual-NDA position.",
+                    "status": "pending"
+                  }
+                ]
+              },
+              {
+                "id": "6",
+                "number": "6",
+                "heading": "Return or Destruction of Materials",
+                "body": "Upon written request, the Receiving Party shall return or destroy all Confidential Information within thirty (30) days, and certify such destruction in writing.",
+                "risk": null,
+                "marginNotes": [],
+                "redlines": []
+              },
+              {
+                "id": "7",
+                "number": "7",
+                "heading": "Governing Law",
+                "body": "This Agreement shall be governed by the laws of the State of Delaware, without regard to its conflict of laws principles.",
+                "risk": null,
+                "marginNotes": [],
+                "redlines": []
+              },
+              {
+                "id": "8",
+                "number": "8",
+                "heading": "Entire Agreement",
+                "body": "This Agreement constitutes the entire agreement between the parties with respect to the subject matter hereof and supersedes all prior negotiations.",
+                "risk": null,
+                "marginNotes": [],
+                "redlines": []
+              }
+            ],
+            "redlines": {
+              "rl-001": {
+                "clauseId": "5.2",
+                "original": "all derivative works shall vest exclusively in Disclosing Party",
+                "suggested": "derivative works created independently by Receiving Party shall remain Receiving Party's property",
+                "rationale": "Carves out independently developed work. This is the standard mutual-NDA position.",
+                "status": "pending"
+              },
+              "rl-002": {
+                "clauseId": "5",
+                "original": "Each party shall indemnify the other against any losses arising from a breach of this Agreement.",
+                "suggested": "Each party shall indemnify the other against direct losses arising from a breach of this Agreement, provided that each party's aggregate liability under this Agreement shall not exceed the fees paid by the Disclosing Party in the twelve (12) months preceding the claim.",
+                "rationale": "Adds a liability cap (industry standard for NDAs of this type).",
+                "status": "pending"
+              }
+            }
+          }
+        }
+      }
+    ]
+  }
+}

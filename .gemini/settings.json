@@ -1,0 +1,8 @@
+{
+  "$schema-note": "Gemini CLI project settings — see https://geminicli.com/docs/cli/gemini-md/. The CopilotKit A2UI hackathon starter is fully trusted; AGENTS.md is added to the context file list so Gemini CLI loads it as memory alongside GEMINI.md (which symlinks to AGENTS.md anyway).",
+  "trust": "trusted",
+  "contextFileName": [
+    "GEMINI.md",
+    "AGENTS.md"
+  ]
+}

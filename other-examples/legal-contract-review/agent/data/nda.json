@@ -1,0 +1,106 @@
+{
+  "id": "doc-nda-2026-001",
+  "title": "Mutual Non-Disclosure Agreement",
+  "parties": [
+    {
+      "name": "Acme Corp.",
+      "role": "Disclosing Party",
+      "address": "1 Innovation Way, Palo Alto, CA 94301, USA"
+    },
+    {
+      "name": "Beta Labs Ltd.",
+      "role": "Receiving Party",
+      "address": "42 King's Cross Road, London N1 9GT, United Kingdom"
+    }
+  ],
+  "effectiveDate": "2026-06-01",
+  "clauses": [
+    {
+      "id": "clause-1",
+      "number": "1",
+      "heading": "Definition of Confidential Information",
+      "body": "\"Confidential Information\" means any non-public information disclosed by either party, whether orally, in writing, or by any other means, that is designated as confidential or that, given the nature of the information or the circumstances of disclosure, a reasonable person would understand to be confidential."
+    },
+    {
+      "id": "clause-2",
+      "number": "2",
+      "heading": "Obligations of Receiving Party",
+      "body": "The Receiving Party shall: (a) hold the Confidential Information in strict confidence; (b) not disclose the Confidential Information to any third party without the prior written consent of the Disclosing Party; and (c) use the Confidential Information solely for the purpose of evaluating the proposed business relationship between the parties."
+    },
+    {
+      "id": "clause-3",
+      "number": "3",
+      "heading": "Term",
+      "body": "This Agreement shall remain in effect for a period of seven (7) years from the Effective Date, after which the obligations of confidentiality shall survive in perpetuity with respect to any Confidential Information that constitutes a trade secret."
+    },
+    {
+      "id": "clause-4",
+      "number": "4",
+      "heading": "Return of Materials",
+      "body": "Upon written request from the Disclosing Party, the Receiving Party shall, within ten (10) business days, return or destroy all materials containing or derived from Confidential Information and certify such return or destruction in writing."
+    },
+    {
+      "id": "clause-5",
+      "number": "5",
+      "heading": "Exclusions",
+      "body": "Confidential Information shall not include information that: (a) is or becomes publicly available through no fault of the Receiving Party; (b) was already in the Receiving Party's possession prior to disclosure; (c) is independently developed by the Receiving Party without reference to the Confidential Information; or (d) is rightfully received from a third party without restriction."
+    },
+    {
+      "id": "clause-6",
+      "number": "6",
+      "heading": "No License",
+      "body": "Nothing in this Agreement shall be construed as granting either party any right, title, or license, whether by implication, estoppel, or otherwise, to any patent, copyright, trademark, trade secret, or other intellectual property right of the other party."
+    },
+    {
+      "id": "clause-7",
+      "number": "7",
+      "heading": "Remedies",
+      "body": "The parties acknowledge that monetary damages alone may be inadequate to remedy a breach of this Agreement. Accordingly, the non-breaching party shall be entitled to seek injunctive relief and any other equitable remedies, in addition to all other remedies available at law or in equity, without the necessity of posting a bond."
+    },
+    {
+      "id": "clause-8",
+      "number": "8",
+      "heading": "Governing Law and Jurisdiction",
+      "body": "This Agreement shall be governed by and construed in accordance with the laws of the State of California, without regard to its conflict of laws principles. Any dispute arising under or in connection with this Agreement shall be resolved exclusively in the state or federal courts located in Santa Clara County, California."
+    }
+  ],
+  "riskFlags": [
+    {
+      "id": "risk-1",
+      "clauseId": "clause-3",
+      "severity": "high",
+      "summary": "Indefinite trade-secret obligation",
+      "detail": "Survival in perpetuity for trade-secret material is unusually broad. Consider capping the survival term at 5-10 years to limit exposure."
+    },
+    {
+      "id": "risk-2",
+      "clauseId": "clause-7",
+      "severity": "medium",
+      "summary": "Bond waiver for injunctive relief",
+      "detail": "Waiving the bond requirement removes a procedural safeguard. Most reviewers will request that the bond requirement be reinstated."
+    },
+    {
+      "id": "risk-3",
+      "clauseId": "clause-8",
+      "severity": "medium",
+      "summary": "Forum may be inconvenient for Beta Labs",
+      "detail": "Exclusive jurisdiction in Santa Clara County could be onerous for a UK-based Receiving Party. Consider arbitration in a neutral forum (e.g. London under LCIA rules)."
+    }
+  ],
+  "redlines": [
+    {
+      "id": "redline-1",
+      "clauseId": "clause-3",
+      "status": "pending",
+      "proposedText": "This Agreement shall remain in effect for a period of three (3) years from the Effective Date. The obligations of confidentiality shall survive for an additional five (5) years following expiration or termination.",
+      "rationale": "Caps the survival period and removes the perpetual trade-secret carve-out, which aligns with industry-standard mutual NDA terms."
+    },
+    {
+      "id": "redline-2",
+      "clauseId": "clause-8",
+      "status": "pending",
+      "proposedText": "This Agreement shall be governed by the laws of England and Wales. Any dispute arising under or in connection with this Agreement shall be finally resolved by arbitration administered by the London Court of International Arbitration (LCIA) under its rules then in force.",
+      "rationale": "Switches to a neutral forum and arbitration, balancing the parties' jurisdictional interests."
+    }
+  ]
+}

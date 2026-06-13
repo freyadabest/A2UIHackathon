@@ -1,0 +1,203 @@
+# FROZEN.md
+
+**Frozen on:** 2026-05-28
+**Forked from:** `CopilotKit/CopilotKit@upstream/main` (commit `23af69041`), path `examples/integrations/langgraph-python`
+**Verifier:** `pnpm verify-pins`
+
+This is the canonical source of truth for what version of every load-bearing
+dependency this starter runs against. CI re-runs the model-ID probe nightly so
+a Google or upstream change is caught before event day.
+
+> **Do not bump these.** AI assistants are explicitly forbidden from changing
+> `@copilotkit/*` versions in `AGENTS.md`. The pre-commit hook rejects drift.
+
+## LLM provider
+
+| Field | Value |
+|---|---|
+| Provider | Google Gemini |
+| SDK | `langchain-google-genai==4.2.4` (native Google Gen AI) |
+| Model ID | **`gemini-3.5-flash`** |
+| Env var | `GEMINI_API_KEY` |
+| Free-tier key | https://aistudio.google.com/apikey |
+| Verified | 2026-05-28 — UI→agent→Gemini with flat-shape frontend tools, `search_flights` fired, `createSurface` envelope returned |
+| Multi-turn | Yes — native SDK handles `thought_signature` replay correctly across tool turns |
+
+### Why this default
+
+`gemini-3.5-flash` is the current Google Flash model (released 2026-05-19) —
+beats 3.1 Pro on agentic benchmarks at Flash pricing, 1M context, 4× speed.
+
+1. **Agentic-tuned.** Google positions Gemini Flash as the agentic flagship.
+2. **Sponsor alignment.** Google is the venue + platform sponsor.
+3. **Free tier.** No credit card required.
+4. **Multi-turn safe** with `langchain-google-genai`'s native SDK (handles
+   `thought_signature` replay; see history below).
+5. **Tool shape clean.** Native SDK converts frontend-tool flat-shape entries
+   correctly, no shim required (though `NormalizeToolShapeMiddleware`
+   stays in place as belt-and-suspenders for future client swaps).
+
+### History: how we landed on the native SDK
+
+The base starter used `langchain-openai` against Gemini's OpenAI-compatibility
+endpoint. Two issues surfaced through running the actual UI:
+
+1. **`gemini-3.5-flash` 400s on multi-turn tool calls via OpenAI-compat:**
+
+   ```
+   Function call is missing a thought_signature in functionCall parts.
+   This is required for tools to work correctly … Please refer to
+   https://ai.google.dev/gemini-api/docs/thought-signatures
+   ```
+
+   `langchain-openai 1.1.9` strips Gemini's thought-metadata. `reasoning_effort:
+   "none"` does not disable the requirement. We confirmed this twice (initial
+   probe + re-probe on 2026-05-28).
+
+2. **Frontend tool shape mismatch:** CopilotKit V2's `useFrontendTool()`
+   registers tools with a flat `{name, description, parameters}` shape that
+   Gemini's OpenAI-compat parser strict-rejects. OpenAI tolerates it; Gemini
+   does not. We fixed this with `agent/src/middleware/normalize_tools.py`
+   (see commit `7c58287`).
+
+Switching the primary and secondary LLM to `langchain-google-genai` (the native
+Google Gen AI SDK, `ChatGoogleGenerativeAI`) resolves (1) entirely and gives
+us cleaner handling of (2) as a side-effect.
+
+### Alternative — fall back to OpenAI-compat + `gemini-2.5-flash`
+
+The OpenAI-compat code path stayed working with `gemini-2.5-flash`. If
+`langchain-google-genai` ever breaks in a way that's worse than the OpenAI-
+compat trap, swap back to:
+
+```python
+from langchain_openai import ChatOpenAI
+model = ChatOpenAI(
+    model="gemini-2.5-flash",
+    api_key=os.getenv("GEMINI_API_KEY"),
+    base_url="https://generativelanguage.googleapis.com/v1beta/openai/",
+    model_kwargs={"parallel_tool_calls": False},
+)
+```
+
+This was the default from 2026-05-28 morning through ~22:50 UTC. The
+`NormalizeToolShapeMiddleware` is required on this path; keep it.
+
+### Models that 404'd in the probe (do not use)
+
+- `gemini-3.0-flash`
+- `gemini-2.5-flash-latest`
+- `gemini-2.0-flash`, `gemini-2.0-flash-001`
+- `gemini-1.5-flash`, `gemini-1.5-flash-latest`
+
+### Free-tier rate-limit behavior
+
+Measured 2026-05-28 against `gemini-2.5-flash` via the OpenAI-compat endpoint
+with a single API key. Tool see `scripts/load-test-gemini.py`.
+
+| Concurrency | Successes | Failures | p50 (ms) | p95 (ms) | p99 (ms) | Wall (ms) | Retry-After |
+|---|---|---|---|---|---|---|---|
+| 30 | 30 / 30 | 0 | 1707 | 2027 | 2104 | 2315 | none |
+| 100 | 100 / 100 | 0 | 1883 | 2314 | 2817 | 2973 | none |
+
+Single-key cliff is well above 100 concurrent agentic tool-calling requests.
+At London-hackathon scale (~30 teams × per-team API keys + a small mentor
+fallback pool), this is comfortable headroom. Three rate-limit mitigations
+(per-team keys via prereq email, mentor fallback pool, `OFFLINE=1` insurance)
+are sufficient; we do NOT need to ship a shared key.
+
+> **HACKATHON.md "if you get rate-limited" runbook:** if a `429` ever appears
+> in chat, fall back to `OFFLINE=1` for the demo. The `/fixed` endpoint then
+> paints a real A2UI surface from a built-in canned sample
+> (`agent/src/offline_sample.py` — a Tesla Q3 FY24 dashboard), no Gemini call
+> and no key. It shows the sample, not your uploaded PDF; `/dynamic` and
+> `/legal` still require a key.
+
+## Pinned versions (JavaScript)
+
+| Package | Pin | Notes |
+|---|---|---|
+| `@copilotkit/react-core` | `1.57.4` (exact) | No caret |
+| `@copilotkit/runtime` | `1.57.4` (exact) | No caret |
+| `@copilotkit/a2ui-renderer` | `1.57.4` (exact) | No caret |
+| `@copilotkit/react-ui` | `1.57.4` (exact) | No caret; chat UI for the pdf-analyst default demo |
+| `@ag-ui/client` | `^0.0.53` | AG-UI client transport for the pdf-analyst default demo (`HttpAgent`) |
+| `@ag-ui/core` | `^0.0.53` | AG-UI core types; added alongside `@ag-ui/client` for the pdf-analyst default demo |
+| `pdfjs-dist` | `^4.10.38` | Client-side PDF parse for the pdf-analyst default demo |
+| `recharts` | `^3.7.0` | Charts rendered by the A2UI catalog (bar/line/donut/scatter) |
+| `next` | `16.1.6` (exact) | — |
+| `react` / `react-dom` | `19.2.4` (exact) | Tightened from caret in A5 |
+| `@ag-ui/a2a-middleware` | (added in Workstream B) | — |
+
+> **2026-05-29: bumped to 1.57.4 for the pdf-analyst demo (owner sign-off;
+> Notion plan).** The three `@copilotkit/*` pins moved `1.56.5 → 1.57.4` and
+> `@copilotkit/react-ui`, `@ag-ui/client`, `@ag-ui/core`, `pdfjs-dist`, and
+> `recharts` were added. A Phase-0 spike confirmed forced `tool_choice` still
+> works on Gemini's native SDK at this version, so the Gemini default (below)
+> is unchanged.
+
+> **pdf-analyst is now the default demo (was an example).** It used to live
+> under `other-examples/a2ui-pdf-analyst/`; the merge promoted it to the repo
+> root (web routes `/`, `/fixed`, `/dynamic`, `/catalog`) and archived the
+> previous default (PortKit) to `other-examples/portkit/`. There is a **single
+> root `pnpm-lock.yaml`** after the merge — the example's separate lockfile
+> was folded in.
+
+## Pinned versions (Python)
+
+| Package | Pin | Notes |
+|---|---|---|
+| `langchain` | `1.3.1` | Re-pinned exact 2026-06-04 (was `1.2.15`). Floated up when pdf-analyst's agent `pyproject.toml` (which used `>=` floors) was adopted as the root agent in Phase 2; re-pinned to the resolved version with owner sign-off. |
+| `langchain-core` | `1.4.0` | Pinned exact 2026-06-04 alongside the `langchain`/`langgraph` re-pin. |
+| `langgraph` | `1.2.1` | Re-pinned exact 2026-06-04 (was `1.1.6`); see the `langchain` note. |
+| `langgraph-cli[inmem]` | `0.4.21` | Only used by the archived PortKit agent (`other-examples/portkit/`). The default agent now serves over FastAPI — see "Serving" below. |
+| `langchain-openai` | `1.1.9` | Drives the OpenAI swap path and the documented Gemini OpenAI-compat fallback |
+| `langchain-anthropic` | `1.4.1` | For the Anthropic swap matrix |
+| `copilotkit` | `>=0.1.90` | Python SDK; floor raised 2026-05-29 for the pdf-analyst default demo |
+| `ag-ui-langgraph` | `>=0.0.36` | AG-UI ↔ LangGraph bridge; powers the FastAPI endpoints (`add_langgraph_fastapi_endpoint`) for the pdf-analyst default demo |
+| `uvicorn` | (via FastAPI) | ASGI server the default agent runs under (`uvicorn main:app --port 8123`) |
+| `openai` | `1.109.1` | Transitive (used by langchain-openai) |
+
+`agent/uv.lock` is committed and authoritative. `pnpm verify-pins` asserts the
+`langchain` / `langchain-core` / `langgraph` versions above against it (not
+just the JS pins).
+
+## Serving
+
+The default agent (`agent/main.py`) is a **FastAPI app** run with
+`uvicorn main:app --port 8123` (`pnpm dev:agent` → `scripts/run-agent.sh`).
+It mounts three AG-UI ↔ LangGraph endpoints — `/fixed`, `/dynamic`, `/legal`
+— via `ag_ui_langgraph.add_langgraph_fastapi_endpoint`. The Docker/prod path
+is this same native FastAPI app.
+
+The old **langgraph-cli** serving path (`langgraph dev` / `langgraph.json` /
+the `serve.py` AG-UI wrapper) belonged to the PortKit default and now
+applies only to the archived demo under `other-examples/portkit/` (which
+ships its own `agent/langgraph.json`). There is no `serve.py` at the repo
+root anymore — it was retired during the pdf-analyst promotion and is not
+on the pdf-analyst serving path.
+
+## Package manager
+
+| Layer | Manager | Lockfile |
+|---|---|---|
+| JavaScript | pnpm | `pnpm-lock.yaml` (committed) — a **single root lockfile** after the pdf-analyst merge |
+| Python | uv | `agent/uv.lock` (committed) |
+
+The archived PortKit demo carries its own `other-examples/portkit/agent/uv.lock`
+for standalone use, but it is not installed by the root project.
+
+## Vendoring
+
+`vendor/` mirrors the two load-bearing CopilotKit packages as break-glass
+insurance if upstream yanks or breaks a pinned release before event day:
+
+| Package | Vendored as | Version |
+|---|---|---|
+| `@copilotkit/a2ui-renderer` | `vendor/copilotkit-a2ui-renderer/` (extracted) | `1.57.4` |
+| `copilotkit` (Python) | `vendor/copilotkit-python/copilotkit-0.1.93-py3-none-any.whl` | `0.1.93` |
+
+Both match the pins above. Note: the `copilotkit` `0.1.9x` line is already
+yanked from public PyPI, so the vendored wheel is the retained copy — install
+relies on the exact pin in `agent/uv.lock`. CI proves the vendored swap builds;
+swap + refresh procedure in `vendor/README.md`.

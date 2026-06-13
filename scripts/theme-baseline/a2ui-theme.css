@@ -1,0 +1,36 @@
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   LEGACY host token override layer (PortKit-era shell) — NOT Seam #1.
+
+   The live Seam #1 (re-theme) files for the default pdf-analyst demo are:
+     - src/a2ui/theme.css            (A2UI surface tokens, .a2ui-surface)
+     - src/app/(pdf)/pdf-analyst.css (shell brand tokens, .pdf-analyst-root)
+   See HACKATHON.md §1 for the recipe. `pnpm theme:reset` reverts all three.
+
+   This file is imported AFTER globals.css (in src/app/layout.tsx), so any
+   token set here overrides the host `:root` defaults. The pdf-analyst pages
+   scope their own tokens under `.pdf-analyst-root` / `.a2ui-surface`, so
+   edits here have little visible effect on the default demo — it mainly
+   themes the legacy shell components kept alongside the archived PortKit
+   example. The values below mirror the canonical CopilotKit defaults, so
+   importing this file changes nothing until you edit it.
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+:root {
+  /* Brand accent palette — the heart of a re-theme. */
+  --cpk-lilac-400: #bec2ff;
+  --cpk-mint-400: #85ecce;
+  --cpk-orange-400: #ffac4d;
+  --cpk-yellow-400: #fff388;
+
+  /* Semantic brand tokens (override globals.css). */
+  --primary: #010507; /* buttons / badges ink — dark for the canonical dojo look */
+  --accent: #eee6fe; /* soft lilac wash */
+  --ring: #bec2ff; /* focus ring (lilac) */
+
+  /* Page + glass surface. */
+  --background: #dedee9; /* page background — cool lavender-gray */
+  --surface-main: #dedee9;
+
+  /* To re-tint the ambient blur backdrop, edit --cpk-blur-* in globals.css
+     (they live there because BackgroundBlurCircles reads them directly). */
+}
