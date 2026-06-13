@@ -9,7 +9,6 @@ RUN npm install --ignore-scripts
 COPY src/ ./src/
 COPY public/ ./public/
 COPY next.config.ts tsconfig.json postcss.config.mjs ./
-COPY showcase.json ./showcase.json
 
 # pdf-analyst default swap: no route surgery needed. Both copilotkit routes
 # (src/app/api/copilotkit/[[...slug]]/route.ts for the legal example and
