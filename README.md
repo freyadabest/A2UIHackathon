@@ -12,11 +12,19 @@ Built on the [CopilotKit](https://copilotkit.ai) × [A2UI](https://a2ui.org/) st
 
 ## Demo
 
-https://tinyurl.com/vantage-a2ui-demo
+▶ **[Watch the Vantage AI demo](https://tinyurl.com/vantage-a2ui-demo)** &nbsp;·&nbsp; [`Vantage Demo.mp4`](Vantage%20Demo.mp4)
 
-<video src="https://github.com/freyadabest/A2UIHackathon/raw/main/Vantage%20Demo.mp4" controls muted loop width="100%"></video>
+<!--
+  Want an INLINE player on GitHub? A <video> tag pointing at the committed
+  file won't work — raw.githubusercontent.com serves repo files as
+  application/octet-stream, which browsers refuse to play. To embed inline:
+  open this README in GitHub's web editor (✏️), drag `Vantage Demo.mp4` into
+  the text area, then paste the generated
+  https://github.com/user-attachments/assets/<id> URL here as:
+    <video src="<that-url>" controls muted loop width="100%"></video>
+-->
 
-> If the player doesn't load inline, [watch `Vantage Demo.mp4`](Vantage%20Demo.mp4).
+
 
 ---
 
