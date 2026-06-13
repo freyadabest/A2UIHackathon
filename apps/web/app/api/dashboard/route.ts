@@ -22,13 +22,19 @@ export async function POST(req: NextRequest) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ idea }),
       cache: "no-store",
+      signal: AbortSignal.timeout(55_000),
     });
     const data = await res.json();
     return NextResponse.json(data, { status: res.status });
   } catch (err) {
+    const timedOut = err instanceof Error && err.name === "TimeoutError";
     return NextResponse.json(
-      { detail: `agent unreachable at ${AGENT_URL}: ${String(err)}` },
-      { status: 502 },
+      {
+        detail: timedOut
+          ? "The web search took too long. Please try again."
+          : `agent unreachable at ${AGENT_URL}: ${String(err)}`,
+      },
+      { status: timedOut ? 504 : 502 },
     );
   }
 }

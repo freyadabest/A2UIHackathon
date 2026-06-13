@@ -33,12 +33,19 @@ export default function Page() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ idea: trimmed }),
+        signal: AbortSignal.timeout(60_000),
       });
       const json = await res.json();
       if (!res.ok) throw new Error(json?.detail ?? "request failed");
       setData(json as DashboardResponse);
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Something went wrong");
+      const msg =
+        e instanceof Error && e.name === "TimeoutError"
+          ? "The search took too long. Please try again."
+          : e instanceof Error
+            ? e.message
+            : "Something went wrong";
+      setError(msg);
       setData(null);
     } finally {
       setLoading(false);
