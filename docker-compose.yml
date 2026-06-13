@@ -1,0 +1,26 @@
+services:
+  redis:
+    image: redis/redis-stack:latest
+    ports:
+      - "6379:6379"
+      - "8001:8001" # RedisInsight
+
+  agent:
+    build: ./services/agent
+    env_file: .env
+    environment:
+      - REDIS_URL=redis://redis:6379
+    ports:
+      - "8000:8000"
+    depends_on:
+      - redis
+
+  web:
+    build: ./apps/web
+    env_file: .env
+    environment:
+      - AGENT_URL=http://agent:8000
+    ports:
+      - "3000:3000"
+    depends_on:
+      - agent
