@@ -1,0 +1,12 @@
+id,name,category,price,rating,inventory,description,imageUrl
+sneaker-001,Nimbus Stride 8,Running,129,4.7,42,Lightweight daily trainer with responsive foam,https://placehold.co/256x256/4f46e5/ffffff?text=Nimbus
+sneaker-002,Trail Blazer Lite,Trail,149,4.5,18,Grippy trail shoe for technical terrain,https://placehold.co/256x256/059669/ffffff?text=Trail
+sneaker-003,Pacer Pro,Racing,179,4.8,9,Carbon-plate racer for personal-best attempts,https://placehold.co/256x256/dc2626/ffffff?text=Pacer
+sneaker-004,Glide Cushion 4,Running,109,4.4,55,Plush max-cushion daily mile-eater,https://placehold.co/256x256/2563eb/ffffff?text=Glide
+sneaker-005,Court Classic Mid,Lifestyle,89,4.2,120,Heritage court silhouette for everyday wear,https://placehold.co/256x256/0f172a/ffffff?text=Court
+jacket-001,Stratus Shell,Outerwear,229,4.6,28,Waterproof 3-layer hiking shell,https://placehold.co/256x256/0891b2/ffffff?text=Shell
+jacket-002,Downtown Puffer,Outerwear,189,4.3,33,Recycled-down city puffer,https://placehold.co/256x256/9333ea/ffffff?text=Puffer
+backpack-001,Trailhead 32L,Bags,159,4.7,14,Lightweight 32L overnight pack,https://placehold.co/256x256/65a30d/ffffff?text=Pack
+backpack-002,Commuter Roll-Top,Bags,99,4.4,67,Water-resistant urban roll-top,https://placehold.co/256x256/0369a1/ffffff?text=Roll
+watch-001,Field Watch 38,Watches,219,4.5,22,Stainless field watch with mechanical movement,https://placehold.co/256x256/78716c/ffffff?text=Field
+watch-002,Smart Sport 2,Watches,299,4.6,31,GPS smartwatch with multi-day battery,https://placehold.co/256x256/1e293b/ffffff?text=Smart

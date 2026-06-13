@@ -1,0 +1,22 @@
+[project]
+name = "a2a-sample-subagent"
+version = "0.1.0"
+description = "Toy A2A subagent for the A2UI hackathon starter — emits A2UI v0.9 envelopes."
+requires-python = ">=3.12"
+dependencies = [
+  # A2A Protocol — server side. Pinned to 0.2.x (the API used by the
+  # upstream @ag-ui/a2a-middleware reference examples). The 1.x line
+  # restructured the package into Starlette route factories and
+  # protobuf AgentCard fields — pin in this directory so the toy
+  # subagent stays a stable copy-and-customize template.
+  # Upgrade path: track upstream CopilotKit examples for the 1.x port.
+  "a2a-sdk[http-server]>=0.2.5,<0.3.0",
+  # ASGI server. A2AStarletteApplication.build() returns an ASGI app.
+  "uvicorn>=0.30.0,<1.0.0",
+  # LangGraph — the subagent's logic is a one-node graph so partner
+  # teams can swap in a real workflow without restructuring.
+  "langgraph>=1.0.0,<2.0.0",
+]
+
+[tool.uv]
+package = false

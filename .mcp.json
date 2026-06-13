@@ -1,0 +1,18 @@
+{
+  "$schema-note": "Suggested MCP servers for the CopilotKit A2UI hackathon starter. Hackers can opt-in by enabling these in their MCP-capable client (Claude Code, Cursor, Codex, Gemini CLI, etc.). The CopilotKit docs server gives AI assistants live access to the canonical documentation so they don't hallucinate APIs or version-specific behavior. Pairs with the CopilotKit skill bundle — install via `npx skills add CopilotKit/CopilotKit` (see https://docs.copilotkit.ai/built-in-agent/build-with-agents).",
+  "mcpServers": {
+    "copilotkit-docs": {
+      "$comment": "Canonical CopilotKit MCP server. Provides expert guidance and grounded code generation for CopilotKit + A2UI features. SSE endpoint; HTTP fallback at https://mcp.copilotkit.ai. See https://docs.copilotkit.ai/built-in-agent/build-with-agents for the companion skill bundle (copilotkit-setup et al).",
+      "type": "sse",
+      "url": "https://mcp.copilotkit.ai/sse",
+      "description": "Live search + agent-development guidance over CopilotKit, AG-UI, and A2UI v0.9 documentation."
+    },
+    "a2ui-spec": {
+      "$comment": "Optional: A2UI v0.9 specification reference. Useful when authoring custom catalogs or debugging envelope shape errors. If a canonical server doesn't exist, leave disabled and reference https://a2ui.org/specification/v0.9-a2ui/ manually.",
+      "type": "http",
+      "url": "https://a2ui.org/mcp",
+      "description": "A2UI v0.9 specification lookup.",
+      "disabled": true
+    }
+  }
+}

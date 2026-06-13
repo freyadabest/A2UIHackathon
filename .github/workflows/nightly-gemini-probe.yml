@@ -1,0 +1,166 @@
+name: Nightly Gemini probe
+
+on:
+  schedule:
+    # 09:00 UTC daily — early enough that London (UTC or BST) sees results before
+    # the working day, well after Google's typical model deprecation push window.
+    - cron: "0 9 * * *"
+  # Allow manual runs from the Actions tab for debugging.
+  workflow_dispatch:
+
+# Only one probe run at a time — they're cheap but there's no benefit to overlap.
+concurrency:
+  group: nightly-gemini-probe
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  probe:
+    name: Multi-turn tool-calling probe
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python (probe uses python3 + curl only)
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Detect GEMINI_API_KEY
+        id: gemini_key
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: |
+          if [[ -n "$GEMINI_API_KEY" ]]; then
+            echo "available=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "available=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Skip if no GEMINI_API_KEY configured
+        if: steps.gemini_key.outputs.available == 'false'
+        run: |
+          echo "::warning::GEMINI_API_KEY secret is not configured on this fork — nightly probe cannot run. Configure GEMINI_API_KEY in Actions secrets to enable model-drift monitoring."
+
+      - name: Run probe-gemini.sh
+        id: probe
+        if: steps.gemini_key.outputs.available == 'true'
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: |
+          set -euo pipefail
+
+          chmod +x ./scripts/probe-gemini.sh
+
+          # Capture both the exit code and the output. The probe script's
+          # final line ("VERDICT: ...") tells us whether the pinned model is
+          # still usable.
+          mkdir -p /tmp/probe
+          if ./scripts/probe-gemini.sh 2>&1 | tee /tmp/probe/output.txt; then
+            echo "exit=ok" >> "$GITHUB_OUTPUT"
+          else
+            echo "exit=fail" >> "$GITHUB_OUTPUT"
+          fi
+
+          # Read the pinned model ID out of FROZEN.md so we can grep for it.
+          PINNED=$(grep -E '^\| Model ID' FROZEN.md | grep -oE '`[^`]+`' | head -n1 | tr -d '`')
+          echo "pinned_model=$PINNED" >> "$GITHUB_OUTPUT"
+          echo "Pinned model from FROZEN.md: $PINNED"
+
+          # Did the pinned model pass the multi-turn check?
+          # The probe prints columns: MODEL  SINGLE-TURN  MULTI-TURN  NOTES
+          # A passing line for the pinned model contains both "200" markers.
+          if grep -E "^${PINNED}\s+200.*200" /tmp/probe/output.txt > /dev/null; then
+            echo "pinned_ok=true" >> "$GITHUB_OUTPUT"
+            echo "Pinned model $PINNED is still healthy."
+          else
+            echo "pinned_ok=false" >> "$GITHUB_OUTPUT"
+            echo "::warning::Pinned model $PINNED did NOT pass multi-turn check in the probe output."
+          fi
+
+      - name: Open an issue if the pinned model broke
+        if: steps.probe.outputs.pinned_ok == 'false'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require("fs");
+            const output = fs.readFileSync("/tmp/probe/output.txt", "utf8");
+            const pinned = "${{ steps.probe.outputs.pinned_model }}";
+
+            const title = `Nightly probe: pinned Gemini model "${pinned}" failed multi-turn check`;
+            const body = [
+              "The nightly Gemini probe found that the model pinned in `FROZEN.md` no longer passes the multi-turn tool-calling check.",
+              "",
+              `**Pinned model:** \`${pinned}\``,
+              `**Probe run:** ${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`,
+              "",
+              "## Probe output",
+              "",
+              "```",
+              output.length > 3000 ? output.slice(-3000) : output,
+              "```",
+              "",
+              "## What to do",
+              "",
+              "1. Re-run the probe locally with `GEMINI_API_KEY=... ./scripts/probe-gemini.sh` to confirm.",
+              "2. If the failure is real, find the highest-priority candidate that DID pass both single- and multi-turn.",
+              "3. Update `agent/main.py`, `agent/src/a2ui_dynamic_schema.py`, `.env.example`, and `FROZEN.md` (with `[FROZEN]` in the PR title).",
+              "4. If NO candidate passes multi-turn, that may mean `langchain-openai` finally gained `thought_signature` passthrough — confirm by checking its changelog. If so, we may be able to flip to 3.5 Flash.",
+            ].join("\n");
+
+            // Don't spam: if a still-open issue with this exact title exists, skip.
+            const { data: existing } = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: "open",
+              labels: "gemini-probe",
+              per_page: 50,
+            });
+            const dupe = existing.find(i => i.title === title);
+            if (dupe) {
+              core.info(`Open issue already exists: #${dupe.number}`);
+              return;
+            }
+
+            const { data: issue } = await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title,
+              body,
+              labels: ["gemini-probe", "needs-attention"],
+            });
+            core.info(`Opened issue #${issue.number}`);
+
+      - name: Close stale gemini-probe issues if the pinned model is back to healthy
+        if: steps.probe.outputs.pinned_ok == 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { data: existing } = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: "open",
+              labels: "gemini-probe",
+              per_page: 50,
+            });
+            for (const issue of existing) {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issue.number,
+                body: "Auto-closing: a subsequent nightly probe shows the pinned model passing multi-turn again.",
+              });
+              await github.rest.issues.update({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issue.number,
+                state: "closed",
+              });
+              core.info(`Auto-closed #${issue.number}`);
+            }

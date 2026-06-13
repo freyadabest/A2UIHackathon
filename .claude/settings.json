@@ -1,0 +1,54 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "$schema-note": "Project-level Claude Code settings for the CopilotKit A2UI hackathon starter. Schema reference: https://docs.claude.com/en/docs/claude-code/settings. Settings here apply to every contributor; user-level overrides live in ~/.claude/settings.json. Hackathon hard rules (no @copilotkit/* version bumps, always run pnpm smoke before declaring done) live in AGENTS.md, which is loaded automatically as CLAUDE.md (symlink).",
+  "permissions": {
+    "allow": [
+      "Bash(pnpm:*)",
+      "Bash(npm:*)",
+      "Bash(npx:*)",
+      "Bash(uv:*)",
+      "Bash(python:*)",
+      "Bash(python3:*)",
+      "Bash(node:*)",
+      "Bash(git status)",
+      "Bash(git status:*)",
+      "Bash(git diff)",
+      "Bash(git diff:*)",
+      "Bash(git log)",
+      "Bash(git log:*)",
+      "Bash(git branch)",
+      "Bash(git branch:*)",
+      "Bash(git show)",
+      "Bash(git show:*)",
+      "Bash(git ls-files)",
+      "Bash(git ls-files:*)",
+      "Bash(git config --get *)",
+      "Bash(ls)",
+      "Bash(ls:*)",
+      "Bash(cat:*)",
+      "Bash(head:*)",
+      "Bash(tail:*)",
+      "Bash(grep:*)",
+      "Bash(rg:*)",
+      "Bash(find:*)",
+      "Bash(pwd)",
+      "Bash(echo:*)",
+      "Bash(curl -fsSL *)",
+      "Bash(jq:*)",
+      "Read(*)",
+      "Edit(*)",
+      "Write(*)"
+    ],
+    "deny": [
+      "Bash(rm -rf /*)",
+      "Bash(sudo:*)",
+      "Bash(pnpm install @copilotkit/*)",
+      "Bash(npm install @copilotkit/*)",
+      "Bash(pnpm add @copilotkit/*)",
+      "Bash(npm add @copilotkit/*)"
+    ]
+  },
+  "env": {
+    "COPILOTKIT_A2UI_STARTER": "1"
+  }
+}

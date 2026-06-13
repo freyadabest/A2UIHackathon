@@ -1,0 +1,112 @@
+{
+  "id": "doc-saas-2026-014",
+  "title": "Software-as-a-Service Subscription Agreement",
+  "parties": [
+    {
+      "name": "Acme Corp.",
+      "role": "Provider",
+      "address": "1 Innovation Way, Palo Alto, CA 94301, USA"
+    },
+    {
+      "name": "Beta Labs Ltd.",
+      "role": "Customer",
+      "address": "42 King's Cross Road, London N1 9GT, United Kingdom"
+    }
+  ],
+  "effectiveDate": "2026-07-15",
+  "clauses": [
+    {
+      "id": "clause-1",
+      "number": "1",
+      "heading": "Subscription Grant",
+      "body": "Subject to the terms of this Agreement, Provider grants Customer a non-exclusive, non-transferable, worldwide right to access and use the Services solely for Customer's internal business purposes during the Subscription Term."
+    },
+    {
+      "id": "clause-2",
+      "number": "2",
+      "heading": "Fees and Payment",
+      "body": "Customer shall pay the fees set forth in the applicable Order Form. All fees are non-refundable. Invoices are due within thirty (30) days of receipt. Late payments accrue interest at the rate of 1.5% per month or the maximum permitted by law, whichever is lower."
+    },
+    {
+      "id": "clause-3",
+      "number": "3",
+      "heading": "Service Level Agreement",
+      "body": "Provider shall use commercially reasonable efforts to make the Services available 99.0% of the time each calendar month, excluding scheduled maintenance and force-majeure events. Customer's sole remedy for any failure to meet this commitment is a service credit equal to 5% of the monthly fee per 1% of downtime."
+    },
+    {
+      "id": "clause-4",
+      "number": "4",
+      "heading": "Data Ownership and Privacy",
+      "body": "Customer retains all right, title, and interest in and to Customer Data. Provider shall process Customer Data only as necessary to deliver the Services and in accordance with Provider's privacy policy and the Data Processing Addendum attached hereto."
+    },
+    {
+      "id": "clause-5",
+      "number": "5",
+      "heading": "Limitation of Liability",
+      "body": "EXCEPT FOR BREACHES OF CONFIDENTIALITY OR INDEMNIFICATION OBLIGATIONS, NEITHER PARTY'S TOTAL LIABILITY UNDER THIS AGREEMENT SHALL EXCEED THE FEES PAID BY CUSTOMER TO PROVIDER IN THE THREE (3) MONTHS PRECEDING THE CLAIM. IN NO EVENT SHALL EITHER PARTY BE LIABLE FOR CONSEQUENTIAL, INCIDENTAL, OR PUNITIVE DAMAGES."
+    },
+    {
+      "id": "clause-6",
+      "number": "6",
+      "heading": "Indemnification",
+      "body": "Provider shall defend and indemnify Customer against any third-party claim alleging that the Services infringe a valid intellectual property right, provided Customer promptly notifies Provider in writing and gives Provider sole control of the defense and settlement."
+    },
+    {
+      "id": "clause-7",
+      "number": "7",
+      "heading": "Termination",
+      "body": "Either party may terminate this Agreement for material breach upon thirty (30) days' written notice if the breach is not cured during such period. Upon termination, Customer shall pay all fees accrued through the effective date of termination, and Provider shall make Customer Data available for export for ninety (90) days."
+    },
+    {
+      "id": "clause-8",
+      "number": "8",
+      "heading": "Auto-Renewal",
+      "body": "The Subscription Term shall automatically renew for successive one-year periods unless either party gives written notice of non-renewal at least sixty (60) days prior to the end of the then-current term. Renewal fees may increase by up to fifteen percent (15%) per renewal at Provider's discretion."
+    },
+    {
+      "id": "clause-9",
+      "number": "9",
+      "heading": "Governing Law",
+      "body": "This Agreement shall be governed by the laws of the State of Delaware. The parties consent to exclusive jurisdiction in the state and federal courts located in New Castle County, Delaware."
+    }
+  ],
+  "riskFlags": [
+    {
+      "id": "risk-1",
+      "clauseId": "clause-3",
+      "severity": "high",
+      "summary": "Capped service credit may be the sole remedy",
+      "detail": "99.0% uptime is below modern enterprise norms (typically 99.9%+). The credit-only remedy with a per-percent multiplier caps recovery well below Customer's likely losses from extended outage."
+    },
+    {
+      "id": "risk-2",
+      "clauseId": "clause-5",
+      "severity": "high",
+      "summary": "Three-month liability cap is unusually low",
+      "detail": "A 3-month liability cap is substantially below the 12-month industry norm for SaaS agreements at this price point. Recommend negotiating up to at least 12 months of fees."
+    },
+    {
+      "id": "risk-3",
+      "clauseId": "clause-8",
+      "severity": "medium",
+      "summary": "Auto-renewal with discretionary price increase",
+      "detail": "A 15% discretionary annual price increase compounded over multiple renewals can materially escalate cost. Cap renewal increases at CPI or a fixed single-digit percentage."
+    }
+  ],
+  "redlines": [
+    {
+      "id": "redline-1",
+      "clauseId": "clause-3",
+      "status": "pending",
+      "proposedText": "Provider shall use commercially reasonable efforts to make the Services available 99.9% of the time each calendar month, excluding scheduled maintenance and force-majeure events. If availability falls below 99.5% in any calendar month, Customer may terminate this Agreement for convenience and receive a pro-rated refund of prepaid fees.",
+      "rationale": "Raises uptime commitment to enterprise norm (99.9%) and adds a termination-for-convenience trigger when availability slips below 99.5%."
+    },
+    {
+      "id": "redline-2",
+      "clauseId": "clause-5",
+      "status": "pending",
+      "proposedText": "EXCEPT FOR BREACHES OF CONFIDENTIALITY, INDEMNIFICATION OBLIGATIONS, OR GROSS NEGLIGENCE, NEITHER PARTY'S TOTAL LIABILITY UNDER THIS AGREEMENT SHALL EXCEED THE FEES PAID BY CUSTOMER TO PROVIDER IN THE TWELVE (12) MONTHS PRECEDING THE CLAIM. IN NO EVENT SHALL EITHER PARTY BE LIABLE FOR CONSEQUENTIAL, INCIDENTAL, OR PUNITIVE DAMAGES, EXCEPT THAT THIS EXCLUSION SHALL NOT APPLY TO DAMAGES ARISING FROM A PARTY'S WILLFUL MISCONDUCT.",
+      "rationale": "Raises the liability cap to 12 months of fees, carves out gross negligence, and clarifies that willful misconduct is not subject to the consequential-damages exclusion."
+    }
+  ]
+}

@@ -1,0 +1,44 @@
+{
+  "id": "flight-card",
+  "name": "FlightCard",
+  "description": "Flight search result card. Shows airline, route, times, duration, status, and price with a 'View details' action.",
+  "catalogId": "copilotkit://app-dashboard-catalog",
+  "pythonTool": "agent/src/a2ui_fixed_schema.py:search_flights",
+  "schema": [
+    {
+      "id": "root",
+      "component": "Row",
+      "children": {
+        "componentId": "flight-card",
+        "path": "/flights"
+      },
+      "gap": 16
+    },
+    {
+      "id": "flight-card",
+      "component": "FlightCard",
+      "airline": { "path": "airline" },
+      "airlineLogo": { "path": "airlineLogo" },
+      "flightNumber": { "path": "flightNumber" },
+      "origin": { "path": "origin" },
+      "destination": { "path": "destination" },
+      "date": { "path": "date" },
+      "departureTime": { "path": "departureTime" },
+      "arrivalTime": { "path": "arrivalTime" },
+      "duration": { "path": "duration" },
+      "status": { "path": "status" },
+      "price": { "path": "price" },
+      "action": {
+        "event": {
+          "name": "book_flight",
+          "context": {
+            "flightNumber": { "path": "flightNumber" },
+            "origin": { "path": "origin" },
+            "destination": { "path": "destination" },
+            "price": { "path": "price" }
+          }
+        }
+      }
+    }
+  ]
+}

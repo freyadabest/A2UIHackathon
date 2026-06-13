@@ -1,0 +1,38 @@
+# lefthook.yml — Pre-commit hooks for the hackathon starter.
+#
+# Two pre-commit jobs:
+#   1. validate-widget — runs pnpm validate-widget on every changed *.json
+#      under agent/src/a2ui/schemas/ (the pdf-analyst schema dir; the old
+#      agent/src/widgets/ dir was archived with PortKit). Catches A2UI v0.9
+#      envelope shape mistakes before they hit the renderer.
+#   2. verify-pins — diffs package.json @copilotkit/*, react/react-dom, next
+#      against FROZEN.md and REJECTS on drift. AGENTS.md hard rule #1: AI
+#      assistants must not bump @copilotkit/*. This hook enforces it.
+#
+# Install:
+#   pnpm dlx lefthook install
+# (postinstall in package.json handles this; this section is a reminder.)
+#
+# Bypass (only if you know what you're doing — never on a release branch):
+#   LEFTHOOK=0 git commit ...
+# or
+#   git commit --no-verify
+
+pre-commit:
+  parallel: true
+  jobs:
+    # ─────────── A2UI widget JSON validation ───────────
+    # Run validate-widget on each changed widget/schema JSON (pdf-analyst
+    # layout: agent/src/a2ui/schemas/ + the legal example's schemas dir).
+    # Skip silently if no widget JSONs changed in this commit.
+    - name: validate-widget
+      glob: "{agent/src/a2ui/schemas/*.json,other-examples/legal-contract-review/schemas/*.json}"
+      run: pnpm validate-widget {staged_files}
+      stage_fixed: false
+
+    # ─────────── Pin drift detection ───────────
+    # Always run on package.json changes. This is the "AI assistants must not
+    # bump @copilotkit/*" enforcement.
+    - name: verify-pins
+      glob: "package.json"
+      run: ./scripts/verify-pins.sh

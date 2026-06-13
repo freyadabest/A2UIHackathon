@@ -1,0 +1,445 @@
+/**
+ * Legal Paper Catalog — Scoped Theme
+ *
+ * Every rule in this file is scoped under `[data-catalog-style="legal-paper"]`
+ * so the dashboard demo's CSS variables (defined globally in
+ * `src/lib/a2ui-theme.css` and `src/app/globals.css`) are untouched.
+ *
+ * Variables and palette match plan §4.1. Dark mode is deliberately
+ * disabled inside the paper surface — the warm off-white background is
+ * load-bearing for the "this is a printed document" affordance.
+ */
+
+[data-catalog-style="legal-paper"] {
+  /* ── Palette ────────────────────────────────────────────────── */
+  --paper-bg: #fdfcf8;
+  --paper-border: #e5e0d3;
+  --paper-fg: #1f1b16;
+  --paper-muted: #6b6657;
+
+  --redline-original: #b91c1c;
+  --redline-suggested: #047857;
+  --redline-suggested-bg: rgba(4, 120, 87, 0.08);
+
+  --risk-low: #eab308;
+  --risk-med: #f97316;
+  --risk-high: #dc2626;
+  --risk-critical: #7c2d12;
+
+  --verdict-positive: #047857;
+  --verdict-neutral: #6b6657;
+  --verdict-negative: #b91c1c;
+
+  --margin-info: #6366f1;
+  --margin-warning: #f97316;
+  --margin-critical: #b91c1c;
+
+  /* ── Typography ─────────────────────────────────────────────── */
+  font-family: "Georgia", "Charter", "Times New Roman", serif;
+  font-size: 17px;
+  line-height: 1.7;
+  color: var(--paper-fg);
+  background: var(--paper-bg);
+
+  /* Force a stable light surface inside the paper, even when the global
+     theme toggles to dark. Per plan §4.4, dark mode is suppressed here. */
+  color-scheme: light;
+}
+
+/* ── Layout primitives ────────────────────────────────────────── */
+[data-catalog-style="legal-paper"] .lp-shell {
+  background: var(--paper-bg);
+  color: var(--paper-fg);
+  border: 1px solid var(--paper-border);
+  border-radius: 4px;
+  box-shadow: 0 1px 3px rgba(31, 27, 22, 0.06),
+    0 1px 2px rgba(31, 27, 22, 0.04);
+  padding: 40px 48px;
+  max-width: 920px;
+  margin: 0 auto;
+  position: relative;
+}
+
+[data-catalog-style="legal-paper"] .lp-disclaimer {
+  background: rgba(220, 38, 38, 0.06);
+  border: 1px solid rgba(220, 38, 38, 0.18);
+  color: var(--redline-original);
+  font-family: ui-sans-serif, system-ui, -apple-system, sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 6px 12px;
+  border-radius: 3px;
+  margin-bottom: 24px;
+  text-align: center;
+}
+
+[data-catalog-style="legal-paper"] .lp-header {
+  border-bottom: 2px solid var(--paper-border);
+  padding-bottom: 16px;
+  margin-bottom: 24px;
+}
+
+[data-catalog-style="legal-paper"] .lp-title {
+  font-size: 1.75rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  margin: 0 0 8px 0;
+  color: var(--paper-fg);
+}
+
+[data-catalog-style="legal-paper"] .lp-parties {
+  font-size: 0.95rem;
+  color: var(--paper-muted);
+  margin: 4px 0;
+}
+
+[data-catalog-style="legal-paper"] .lp-effective-date {
+  font-size: 0.85rem;
+  color: var(--paper-muted);
+  font-style: italic;
+  margin: 4px 0 0 0;
+}
+
+[data-catalog-style="legal-paper"] .lp-body {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  max-width: 680px;
+}
+
+/* ── Mobile (< 1024px) — plan §8.3 ────────────────────────────────
+   Below the breakpoint, the reading column drops its max-width and uses
+   the full surface with comfortable padding. The Verdict stays full-width
+   (no rule needed — it has no max-width). The clause grid already collapses
+   to a single column above (default 1fr), which stacks margin notes inline
+   below their clause main column. */
+@media (max-width: 1023px) {
+  [data-catalog-style="legal-paper"] .lp-shell {
+    padding: 24px 20px;
+  }
+  [data-catalog-style="legal-paper"] .lp-body {
+    max-width: 100%;
+    padding: 0 20px;
+  }
+}
+
+/* ── Verdict ──────────────────────────────────────────────────── */
+[data-catalog-style="legal-paper"] .lp-verdict {
+  border-left: 4px solid var(--verdict-neutral);
+  background: rgba(229, 224, 211, 0.25);
+  padding: 12px 16px;
+  border-radius: 3px;
+  margin-bottom: 16px;
+}
+
+[data-catalog-style="legal-paper"] .lp-verdict[data-tone="positive"] {
+  border-left-color: var(--verdict-positive);
+  background: rgba(4, 120, 87, 0.06);
+}
+
+[data-catalog-style="legal-paper"] .lp-verdict[data-tone="negative"] {
+  border-left-color: var(--verdict-negative);
+  background: rgba(185, 28, 28, 0.06);
+}
+
+[data-catalog-style="legal-paper"] .lp-verdict-headline {
+  font-weight: 700;
+  font-size: 1.05rem;
+  margin: 0 0 4px 0;
+}
+
+[data-catalog-style="legal-paper"] .lp-verdict-summary {
+  font-size: 0.95rem;
+  color: var(--paper-muted);
+  margin: 0;
+}
+
+/* ── Clause ───────────────────────────────────────────────────── */
+[data-catalog-style="legal-paper"] .lp-clause {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+  padding-bottom: 8px;
+}
+
+@media (min-width: 1024px) {
+  [data-catalog-style="legal-paper"] .lp-clause {
+    grid-template-columns: 1fr 220px;
+    gap: 24px;
+  }
+}
+
+[data-catalog-style="legal-paper"] .lp-clause-main {
+  min-width: 0;
+}
+
+[data-catalog-style="legal-paper"] .lp-clause-number {
+  font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  font-size: 0.8rem;
+  color: var(--paper-muted);
+  font-weight: 500;
+  margin-right: 8px;
+}
+
+[data-catalog-style="legal-paper"] .lp-clause-heading {
+  font-weight: 700;
+  font-size: 1.05rem;
+  display: inline;
+  color: var(--paper-fg);
+}
+
+[data-catalog-style="legal-paper"] .lp-clause-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+  flex-wrap: wrap;
+}
+
+[data-catalog-style="legal-paper"] .lp-clause-body {
+  font-size: 17px;
+  line-height: 1.7;
+  color: var(--paper-fg);
+  margin: 4px 0 0 0;
+}
+
+[data-catalog-style="legal-paper"] .lp-clause-redlines {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+[data-catalog-style="legal-paper"] .lp-clause-margin {
+  /* The aside slot — only visible on ≥1024px via the grid; below that it
+     stacks under the clause main column. */
+
+  /* Copy-paste behavior — plan §8.5
+     The margin column is annotations *about* the contract, not part of the
+     contract text. Suppress selection at the column level so a "select-all
+     and paste into a doc" gesture grabs the contract body cleanly. The
+     .lp-margin-note override below re-enables selection if a user deliberately
+     drags inside a single note. */
+  user-select: none;
+}
+
+[data-catalog-style="legal-paper"] .lp-margin-note {
+  user-select: text;
+}
+
+/* ── Redline ──────────────────────────────────────────────────── */
+[data-catalog-style="legal-paper"] .lp-redline {
+  border: 1px solid var(--paper-border);
+  background: var(--redline-suggested-bg);
+  border-radius: 4px;
+  padding: 10px 14px;
+  font-family: ui-sans-serif, system-ui, -apple-system, sans-serif;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+[data-catalog-style="legal-paper"] .lp-redline[data-status="accepted"] {
+  background: rgba(4, 120, 87, 0.08);
+  border-color: var(--redline-suggested);
+}
+
+[data-catalog-style="legal-paper"] .lp-redline[data-status="rejected"] {
+  opacity: 0.55;
+  background: rgba(229, 224, 211, 0.3);
+}
+
+[data-catalog-style="legal-paper"] .lp-redline-original {
+  color: var(--redline-original);
+  text-decoration: line-through;
+  text-decoration-thickness: 1px;
+}
+
+[data-catalog-style="legal-paper"] .lp-redline-suggested {
+  color: var(--redline-suggested);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 2px;
+  font-weight: 500;
+}
+
+[data-catalog-style="legal-paper"] .lp-redline-rationale {
+  font-size: 0.8rem;
+  color: var(--paper-muted);
+  margin-top: 4px;
+  font-style: italic;
+}
+
+[data-catalog-style="legal-paper"] .lp-redline-status-accepted {
+  color: var(--redline-suggested);
+  font-weight: 600;
+  font-size: 0.85rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* ── MarginNote ───────────────────────────────────────────────── */
+[data-catalog-style="legal-paper"] .lp-margin-note {
+  border-left: 3px solid var(--margin-info);
+  background: rgba(99, 102, 241, 0.05);
+  padding: 8px 12px;
+  font-family: ui-sans-serif, system-ui, -apple-system, sans-serif;
+  font-size: 0.82rem;
+  line-height: 1.5;
+  color: var(--paper-muted);
+  border-radius: 2px;
+}
+
+[data-catalog-style="legal-paper"] .lp-margin-note[data-severity="warning"] {
+  border-left-color: var(--margin-warning);
+  background: rgba(249, 115, 22, 0.06);
+  color: #92400e;
+}
+
+[data-catalog-style="legal-paper"] .lp-margin-note[data-severity="critical"] {
+  border-left-color: var(--margin-critical);
+  background: rgba(185, 28, 28, 0.06);
+  color: var(--redline-original);
+}
+
+[data-catalog-style="legal-paper"] .lp-margin-note-body {
+  margin: 0;
+}
+
+[data-catalog-style="legal-paper"] .lp-margin-note-citation {
+  margin-top: 6px;
+}
+
+/* ── Citation ─────────────────────────────────────────────────── */
+[data-catalog-style="legal-paper"] .lp-citation {
+  display: inline-block;
+  font-family: ui-sans-serif, system-ui, -apple-system, sans-serif;
+  font-size: 0.75rem;
+  color: var(--paper-muted);
+  border-bottom: 1px dotted var(--paper-muted);
+  text-decoration: none;
+}
+
+[data-catalog-style="legal-paper"] a.lp-citation:hover {
+  color: var(--paper-fg);
+  border-bottom-color: var(--paper-fg);
+}
+
+[data-catalog-style="legal-paper"] .lp-citation-pinpoint {
+  font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  font-size: 0.7rem;
+  color: var(--paper-muted);
+  margin-left: 4px;
+}
+
+/* ── RiskBadge ────────────────────────────────────────────────── */
+[data-catalog-style="legal-paper"] .lp-risk-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: 3px;
+  font-family: ui-sans-serif, system-ui, -apple-system, sans-serif;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+[data-catalog-style="legal-paper"] .lp-risk-badge[data-level="low"] {
+  background: rgba(234, 179, 8, 0.15);
+  color: #854d0e;
+  border: 1px solid rgba(234, 179, 8, 0.4);
+}
+
+[data-catalog-style="legal-paper"] .lp-risk-badge[data-level="medium"] {
+  background: rgba(249, 115, 22, 0.15);
+  color: #9a3412;
+  border: 1px solid rgba(249, 115, 22, 0.4);
+}
+
+[data-catalog-style="legal-paper"] .lp-risk-badge[data-level="high"] {
+  background: rgba(220, 38, 38, 0.12);
+  color: var(--risk-high);
+  border: 1px solid rgba(220, 38, 38, 0.4);
+}
+
+[data-catalog-style="legal-paper"] .lp-risk-badge[data-level="critical"] {
+  background: rgba(124, 45, 18, 0.15);
+  color: var(--risk-critical);
+  border: 1px solid rgba(124, 45, 18, 0.5);
+}
+
+/* ── AcceptRejectBar ──────────────────────────────────────────── */
+[data-catalog-style="legal-paper"] .lp-accept-reject-bar {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+[data-catalog-style="legal-paper"] .lp-accept-btn,
+[data-catalog-style="legal-paper"] .lp-reject-btn {
+  font-family: ui-sans-serif, system-ui, -apple-system, sans-serif;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  padding: 6px 14px;
+  border-radius: 3px;
+  cursor: pointer;
+  border: 1px solid;
+  transition: all 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+[data-catalog-style="legal-paper"] .lp-accept-btn {
+  background: var(--redline-suggested);
+  color: #fefefe;
+  border-color: var(--redline-suggested);
+}
+
+[data-catalog-style="legal-paper"] .lp-accept-btn:hover:not(:disabled) {
+  background: #035e44;
+  border-color: #035e44;
+}
+
+[data-catalog-style="legal-paper"] .lp-reject-btn {
+  background: var(--paper-bg);
+  color: var(--redline-original);
+  border-color: var(--redline-original);
+}
+
+[data-catalog-style="legal-paper"] .lp-reject-btn:hover:not(:disabled) {
+  background: rgba(185, 28, 28, 0.06);
+}
+
+[data-catalog-style="legal-paper"] .lp-accept-btn:disabled,
+[data-catalog-style="legal-paper"] .lp-reject-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+/* ── LegalDivider ─────────────────────────────────────────────── */
+[data-catalog-style="legal-paper"] .lp-divider {
+  border: none;
+  border-top: 1px solid var(--paper-border);
+  margin: 16px 0;
+  width: 100%;
+}
+
+/* ── A11y utility ─────────────────────────────────────────────── */
+[data-catalog-style="legal-paper"] .lp-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
