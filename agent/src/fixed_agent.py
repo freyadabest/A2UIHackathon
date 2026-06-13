@@ -30,11 +30,12 @@ from langchain_google_genai import ChatGoogleGenerativeAI
 from langgraph.checkpoint.memory import MemorySaver
 
 from src.catalog import CATALOG_ID, CATALOG_PROMPT
-from src.research_tools import research_market
+from src.research_tools import analyze_reviews, research_market
 
 SCHEMA_DIR = Path(__file__).parent / "a2ui" / "schemas"
 DASHBOARD_SCHEMA = a2ui.load_schema(SCHEMA_DIR / "dashboard.json")
 SURFACE = "pdf-dashboard"
+REVIEW_SURFACE = "review-deepdive"
 
 
 # NOTE (Gemini typed-array fix): every list parameter on render_dashboard
@@ -145,6 +146,55 @@ def render_dashboard(
     )
 
 
+# Typed array items for render_review_themes (same Gemini typed-array rule as
+# render_dashboard above: list[<TypedDict>], never list[dict]).
+class ReviewTheme(TypedDict):
+    theme: str
+    mentions: int
+    sentiment: str
+    examples: list[str]
+
+
+@tool
+def render_review_themes(
+    competitor: str,
+    strengths: list[ReviewTheme],
+    weaknesses: list[ReviewTheme],
+    using_sample_data: bool,
+) -> str:
+    """Render a competitor "deep dive": strengths vs. weaknesses review themes.
+
+    Call this ONCE, AFTER `analyze_reviews`, mapping that tool's JSON result
+    straight into these arguments. Use ONLY themes/quotes returned by
+    analyze_reviews — never invent reviews.
+
+    Args:
+      competitor: The business the themes belong to, e.g. "BLOK Shoreditch".
+      strengths: Positive themes. Each {theme, mentions, sentiment:"positive",
+        examples:[1-2 quotes]}.
+      weaknesses: Negative themes. Each {theme, mentions,
+        sentiment:"negative", examples:[1-2 quotes]}.
+      using_sample_data: Pass through analyze_reviews' usingSampleData flag so
+        the card can show a "sample data" tag when no live keys were set.
+    """
+    components = [
+        {
+            "id": "root",
+            "component": "ReviewThemes",
+            "competitor": competitor,
+            "strengths": strengths,
+            "weaknesses": weaknesses,
+            "usingSampleData": using_sample_data,
+        }
+    ]
+    return a2ui.render(
+        operations=[
+            a2ui.create_surface(REVIEW_SURFACE, catalog_id=CATALOG_ID),
+            a2ui.update_components(REVIEW_SURFACE, components),
+        ]
+    )
+
+
 SYSTEM_PROMPT = f"""\
 You are Vantage AI. You help someone deciding where to open a local
 business understand the competitive landscape of an area, and you build a
@@ -182,6 +232,19 @@ To build or re-scope the dashboard:
 When the user (or a chip click) asks to change scope (a different area or
 ranking), re-run research_market for the new scope, then re-call
 render_dashboard with the SAME surfaceId so the canvas updates in place.
+
+## Deep dive on one competitor
+
+When the user wants to drill into ONE specific competitor's customer reviews
+("what do reviewers love/hate about BLOK?", "deep dive on Tempo Pilates",
+"show review themes for X"):
+  1. Call `analyze_reviews(competitor_name=<the named business>,
+     business_type=<business>, area=<area>)` EXACTLY ONCE.
+  2. Then call `render_review_themes(...)` EXACTLY ONCE, mapping the JSON
+     result straight through (competitor, strengths, weaknesses, and the
+     usingSampleData flag → using_sample_data).
+This renders its own ReviewThemes surface; it does NOT replace the dashboard.
+Use ONLY the themes/quotes analyze_reviews returns — never invent reviews.
 
 ## Hard rules
 
@@ -242,7 +305,12 @@ def build_fixed_agent():
 
     return create_agent(
         model=_build_model(),
-        tools=[research_market, render_dashboard],
+        tools=[
+            research_market,
+            render_dashboard,
+            analyze_reviews,
+            render_review_themes,
+        ],
         # CopilotKitMiddleware forwards frontend tools + agent context (e.g.
         # useAgentContext payloads) to the LLM.
         middleware=[CopilotKitMiddleware()],

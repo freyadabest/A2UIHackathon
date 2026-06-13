@@ -1045,6 +1045,130 @@ const ChoiceChips = ({
   );
 };
 
+type ReviewTheme = {
+  theme: string;
+  mentions: number;
+  sentiment: "positive" | "negative";
+  examples: string[];
+};
+
+const ReviewThemeCard = ({
+  theme,
+  variant,
+}: {
+  theme: ReviewTheme;
+  variant: "strength" | "weakness";
+}) => {
+  const accent =
+    variant === "strength"
+      ? "border-[color-mix(in_oklab,var(--mint)_55%,white)] bg-[color-mix(in_oklab,var(--mint)_8%,var(--surface))]"
+      : "border-[color-mix(in_oklab,var(--red)_45%,white)] bg-[color-mix(in_oklab,var(--red)_7%,var(--surface))]";
+  const countTone =
+    variant === "strength" ? "text-[#0a5d44]" : "text-[#7a1b22]";
+  return (
+    <div className={clsx("rounded-[var(--radius)] border p-4 flex flex-col gap-2.5", accent)}>
+      <div className="flex items-center justify-between gap-3">
+        <span className="text-[14px] font-semibold text-[var(--ink)]">
+          {theme.theme}
+        </span>
+        <span
+          className={clsx(
+            "mono tabular-nums text-[11px] font-medium shrink-0",
+            countTone,
+          )}
+        >
+          {theme.mentions}x
+        </span>
+      </div>
+      <div className="flex flex-col gap-1.5">
+        {(theme.examples ?? []).slice(0, 2).map((ex, i) => (
+          <blockquote
+            key={i}
+            className="text-[12.5px] leading-relaxed text-[var(--ink-2)] border-l-2 border-[var(--line)] pl-2.5 italic"
+          >
+            &ldquo;{ex}&rdquo;
+          </blockquote>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+const ReviewThemes = ({
+  props,
+}: RendererProps<{
+  competitor: string;
+  strengths: ReviewTheme[];
+  weaknesses: ReviewTheme[];
+  usingSampleData?: boolean;
+}>) => {
+  const strengths = Array.isArray(props.strengths) ? props.strengths : [];
+  const weaknesses = Array.isArray(props.weaknesses) ? props.weaknesses : [];
+  const Column = ({
+    heading,
+    tone,
+    themes,
+    variant,
+    empty,
+  }: {
+    heading: string;
+    tone: string;
+    themes: ReviewTheme[];
+    variant: "strength" | "weakness";
+    empty: string;
+  }) => (
+    <div className="flex flex-col gap-3">
+      <span
+        className={clsx(
+          "mono text-[11px] uppercase tracking-[0.14em] font-medium",
+          tone,
+        )}
+      >
+        {heading}
+      </span>
+      {themes.length === 0 ? (
+        <p className="text-[13px] text-[var(--ink)]">{empty}</p>
+      ) : (
+        <div className="flex flex-col gap-2.5">
+          {themes.map((t, i) => (
+            <ReviewThemeCard key={i} theme={t} variant={variant} />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+  return (
+    <div className="rounded-[var(--radius)] border border-[var(--line)] bg-[var(--surface)] p-5 flex flex-col gap-4">
+      <div className="flex items-center justify-between gap-3 flex-wrap">
+        <h2 className="text-[18px] font-semibold tracking-tight text-[var(--ink)]">
+          Review themes — {props.competitor}
+        </h2>
+        {props.usingSampleData && (
+          <span className="mono text-[10.5px] uppercase tracking-[0.14em] text-[var(--ink)] px-2 py-0.5 rounded-full border border-[var(--line)] bg-[var(--surface-soft)]">
+            sample data
+          </span>
+        )}
+      </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+        <Column
+          heading="Strengths"
+          tone="text-[#0a5d44]"
+          themes={strengths}
+          variant="strength"
+          empty="No clear strengths mentioned in reviews."
+        />
+        <Column
+          heading="Weaknesses"
+          tone="text-[#7a1b22]"
+          themes={weaknesses}
+          variant="weakness"
+          empty="No clear weaknesses mentioned in reviews."
+        />
+      </div>
+    </div>
+  );
+};
+
 function Slot({ render }: { render: ReactNode }) {
   return <>{render}</>;
 }
@@ -1071,4 +1195,5 @@ export const renderers = {
   DataTable,
   Button,
   ChoiceChips,
+  ReviewThemes,
 };

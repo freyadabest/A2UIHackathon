@@ -34,6 +34,19 @@ const childrenRef = z.union([
 /* Helpers for "may be a literal or a path binding". */
 const stringOrPath = z.union([z.string(), z.object({ path: z.string() })]);
 
+/* A single review theme + the "array of themes OR path" union used by
+ * ReviewThemes. Mirrors the agent's analyze_reviews output shape. */
+const themeObject = z.object({
+  theme: z.string(),
+  mentions: z.number(),
+  sentiment: z.enum(["positive", "negative"]),
+  examples: z.array(z.string()),
+});
+const themesOrPath = z.union([
+  z.array(themeObject),
+  z.object({ path: z.string() }),
+]);
+
 export const definitions = {
   Stack: {
     description:
@@ -272,6 +285,20 @@ export const definitions = {
       ]),
       value: z.object({ path: z.string() }),
       multi: z.boolean().optional(),
+    }),
+  },
+
+  ReviewThemes: {
+    description:
+      "Side-by-side strengths vs. weaknesses extracted from a competitor's " +
+      "customer reviews. Each theme carries a mention count and 1-2 quoted " +
+      "examples. Use for a 'deep dive' on a single competitor after the " +
+      "dashboard scan (e.g. 'what do reviewers love/hate about BLOK?').",
+    props: z.object({
+      competitor: stringOrPath,
+      strengths: themesOrPath,
+      weaknesses: themesOrPath,
+      usingSampleData: z.boolean().optional(),
     }),
   },
 };

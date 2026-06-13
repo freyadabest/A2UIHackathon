@@ -67,6 +67,10 @@ component must have `id: "root"`.
 - **Button** { label, variant?: primary|secondary|ghost, action: { event: { name, context? } } }
 - **ChoiceChips** { label, options: [{label,value}], value: {path}, multi?: bool }
 
+### Domain
+- **ReviewThemes** { competitor: string|{path}, strengths: [{theme,mentions,sentiment,examples:[str]}] | {path}, weaknesses: [same] | {path}, usingSampleData?: bool }
+    Side-by-side strengths vs. weaknesses extracted from a competitor's customer reviews. Each theme has a mention count and 1-2 quoted examples. Use for a "deep dive" on ONE competitor's reviews (e.g. "what do reviewers love/hate about BLOK?"). sentiment is "positive" for strengths, "negative" for weaknesses.
+
 
 ### Rules
 1. Exactly one component has id="root". Everything else must be reachable from root.
