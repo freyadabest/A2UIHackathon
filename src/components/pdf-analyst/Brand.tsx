@@ -31,7 +31,6 @@ export function SiteNav({
   const links: Array<{ href: string; label: string; key: typeof active }> = [
     { href: "/", label: "Overview", key: "home" },
     { href: "/fixed", label: "Market scan", key: "fixed" },
-    { href: "/dynamic", label: "Deep dive", key: "dynamic" },
     { href: "/catalog", label: "Catalog", key: "catalog" },
   ];
   return (

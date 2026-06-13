@@ -19,6 +19,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
     <CopilotKit
       runtimeUrl="/api/copilotkit-pdf"
       renderActivityMessages={RENDERERS}
+      showDevConsole={false}
     >
       {children}
     </CopilotKit>

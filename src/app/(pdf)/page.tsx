@@ -28,7 +28,7 @@ export default function Home() {
       />
 
       <main className="flex-1 max-w-[1320px] mx-auto px-6 py-12 w-full">
-        <div className="grid md:grid-cols-2 gap-5">
+        <div className="grid md:grid-cols-1 max-w-xl gap-5">
           <ModeCard
             href="/fixed"
             badge="01 · MARKET SCAN"
@@ -40,18 +40,6 @@ export default function Home() {
               "Click a chip to re-scope to a neighbouring area",
             ]}
             cta="Run a market scan"
-          />
-          <ModeCard
-            href="/dynamic"
-            badge="02 · DEEP DIVE"
-            title="Ask anything, get the right shape"
-            blurb="Follow up on the landscape. The agent answers your question, then a second LLM pass invents the UI from the catalog."
-            bullets={[
-              "Pick any of the 21 catalog components, in any combination",
-              "Stat for single numbers · LineChart for trends · DataTable for lists",
-              "Same brand tokens. The agent never sees CSS",
-            ]}
-            cta="Open the deep dive"
           />
         </div>
 
