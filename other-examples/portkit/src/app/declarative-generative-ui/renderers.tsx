@@ -1,0 +1,1376 @@
+/**
+ * A2UI Catalog — React Renderers
+ *
+ * Each renderer maps a component name from definitions.ts to a React
+ * implementation. Props are type-checked against the Zod schemas.
+ *
+ * To add a component: define its schema in definitions.ts, then add a
+ * renderer here. See README.md "Adding a custom component" for details.
+ *
+ * The assembled catalog is registered in layout.tsx via
+ * <CopilotKit a2ui={{ catalog: demonstrationCatalog }}>.
+ */
+"use client";
+
+import React, { useState } from "react";
+import {
+  PieChart as RechartsPie,
+  Pie,
+  Cell,
+  ResponsiveContainer,
+  BarChart as RechartsBar,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip,
+  CartesianGrid,
+} from "recharts";
+import { createCatalog } from "@copilotkit/a2ui-renderer";
+import type { CatalogRenderers } from "@copilotkit/a2ui-renderer";
+import { demonstrationCatalogDefinitions } from "./definitions";
+import type { DemonstrationCatalogDefinitions } from "./definitions";
+
+// ─── Theme-aware colors ─────────────────────────────────────────────
+
+const c = {
+  card: "var(--card)",
+  cardFg: "var(--card-foreground)",
+  border: "var(--border)",
+  muted: "var(--muted-foreground)",
+  divider: "color-mix(in srgb, var(--border) 50%, var(--card))",
+  shadow: "0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.04)",
+  btnBg: "color-mix(in srgb, var(--muted) 40%, var(--card))",
+  btnDoneBg: "color-mix(in srgb, #22c55e 10%, var(--card))",
+};
+
+function ActionButton({
+  label,
+  doneLabel,
+  action,
+  children: child,
+}: {
+  label: string;
+  doneLabel: string;
+  action: any;
+  children?: React.ReactNode;
+}) {
+  const [done, setDone] = useState(false);
+  return (
+    <button
+      disabled={done}
+      style={{
+        width: "100%",
+        padding: "10px 16px",
+        borderRadius: "10px",
+        border: done ? "1px solid #bbf7d0" : `1px solid ${c.border}`,
+        background: done ? c.btnDoneBg : c.btnBg,
+        color: done ? "#059669" : c.cardFg,
+        fontSize: "0.85rem",
+        fontWeight: 500,
+        cursor: done ? "default" : "pointer",
+        transition: "all 0.2s ease",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        gap: "6px",
+      }}
+      onClick={() => {
+        if (!done) {
+          action?.();
+          setDone(true);
+        }
+      }}
+    >
+      {done && (
+        <svg
+          width="16"
+          height="16"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="#059669"
+          strokeWidth="2.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          <polyline points="20 6 9 17 4 12" />
+        </svg>
+      )}
+      {done ? doneLabel : (child ?? label)}
+    </button>
+  );
+}
+
+// ─── Renderers (type-checked against schema definitions) ────────────
+
+const demonstrationCatalogRenderers: CatalogRenderers<DemonstrationCatalogDefinitions> =
+  {
+    Title: ({ props: rawProps }) => {
+      const props = rawProps as Record<string, any>;
+      const Tag = (
+        props.level === "h1" ? "h1" : props.level === "h3" ? "h3" : "h2"
+      ) as keyof React.JSX.IntrinsicElements;
+      const sizes: Record<string, string> = {
+        h1: "1.75rem",
+        h2: "1.25rem",
+        h3: "1rem",
+      };
+      return (
+        <Tag
+          style={{
+            margin: 0,
+            fontWeight: 600,
+            fontSize: sizes[props.level ?? "h2"],
+            color: c.cardFg,
+            letterSpacing: "-0.01em",
+          }}
+        >
+          {props.text}
+        </Tag>
+      );
+    },
+
+    // Text: removed — use the basic catalog's Text (supports DynamicStringSchema
+    // for path bindings in fixed-schema templates).
+
+    Row: ({ props, children }) => {
+      const justifyMap: Record<string, string> = {
+        start: "flex-start",
+        center: "center",
+        end: "flex-end",
+        spaceBetween: "space-between",
+      };
+      const items = Array.isArray(props.children) ? props.children : [];
+      return (
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            gap: `${props.gap ?? 16}px`,
+            alignItems: props.align ?? "stretch",
+            justifyContent:
+              justifyMap[props.justify ?? "start"] ?? "flex-start",
+            flexWrap: "wrap",
+            width: "100%",
+          }}
+        >
+          {items.map((item: any, i: number) => {
+            if (typeof item === "string")
+              return (
+                <div
+                  key={`${item}-${i}`}
+                  style={{ flex: "1 1 0", minWidth: 0 }}
+                >
+                  {children(item)}
+                </div>
+              );
+            if (item && typeof item === "object" && "id" in item)
+              return (
+                <div
+                  key={`${item.id}-${i}`}
+                  style={{ flex: "1 1 0", minWidth: 0 }}
+                >
+                  {(children as any)(item.id, item.basePath)}
+                </div>
+              );
+            return null;
+          })}
+        </div>
+      );
+    },
+
+    Column: ({ props, children }) => {
+      const items = Array.isArray(props.children) ? props.children : [];
+      return (
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            gap: `${props.gap ?? 12}px`,
+            width: "100%",
+          }}
+        >
+          {items.map((item: any, i: number) => {
+            if (typeof item === "string")
+              return (
+                <React.Fragment key={`${item}-${i}`}>
+                  {children(item)}
+                </React.Fragment>
+              );
+            if (item && typeof item === "object" && "id" in item)
+              return (
+                <React.Fragment key={`${item.id}-${i}`}>
+                  {(children as any)(item.id, item.basePath)}
+                </React.Fragment>
+              );
+            return null;
+          })}
+        </div>
+      );
+    },
+
+    DashboardCard: ({ props: rawProps, children }) => {
+      const props = rawProps as Record<string, any>;
+      return (
+        <div
+          style={{
+            background: c.card,
+            borderRadius: "12px",
+            border: `1px solid ${c.border}`,
+            padding: "20px",
+            boxShadow: c.shadow,
+            display: "flex",
+            flexDirection: "column",
+            gap: "12px",
+          }}
+        >
+          <div>
+            <div style={{ fontWeight: 600, fontSize: "0.9rem", color: c.cardFg }}>
+              {props.title}
+            </div>
+            {props.subtitle && (
+              <div
+                style={{
+                  fontSize: "0.75rem",
+                  color: c.muted,
+                  marginTop: "2px",
+                }}
+              >
+                {props.subtitle}
+              </div>
+            )}
+          </div>
+          {props.child && children(props.child)}
+        </div>
+      );
+    },
+
+    Metric: ({ props: rawProps }) => {
+      // The binder resolves path bindings to strings at runtime;
+      // cast lets the existing JSX render DynString values unchanged.
+      const props = rawProps as Record<string, any>;
+      const trendColors: Record<string, string> = {
+        up: "#059669",
+        down: "#dc2626",
+        neutral: c.muted,
+      };
+      const trendIcons: Record<string, string> = {
+        up: "↑",
+        down: "↓",
+        neutral: "→",
+      };
+      return (
+        <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
+          <span
+            style={{
+              fontSize: "0.75rem",
+              color: c.muted,
+              fontWeight: 500,
+              textTransform: "uppercase",
+              letterSpacing: "0.05em",
+            }}
+          >
+            {props.label}
+          </span>
+          <div style={{ display: "flex", alignItems: "baseline", gap: "8px" }}>
+            <span
+              style={{
+                fontSize: "1.5rem",
+                fontWeight: 700,
+                color: c.cardFg,
+                letterSpacing: "-0.02em",
+              }}
+            >
+              {props.value}
+            </span>
+            {props.trend && props.trendValue && (
+              <span
+                style={{
+                  fontSize: "0.8rem",
+                  fontWeight: 500,
+                  color: trendColors[props.trend] ?? c.muted,
+                }}
+              >
+                {trendIcons[props.trend]} {props.trendValue}
+              </span>
+            )}
+          </div>
+        </div>
+      );
+    },
+
+    PieChart: ({ props: rawProps }) => {
+      const props = rawProps as Record<string, any>;
+      const COLORS = [
+        "#3b82f6",
+        "#8b5cf6",
+        "#ec4899",
+        "#f59e0b",
+        "#10b981",
+        "#6366f1",
+      ];
+      const data: any[] = Array.isArray(props.data) ? props.data : [];
+      return (
+        <div style={{ width: "100%", height: 200 }}>
+          <ResponsiveContainer>
+            <RechartsPie>
+              <Pie
+                data={data}
+                dataKey="value"
+                nameKey="label"
+                cx="50%"
+                cy="50%"
+                innerRadius={props.innerRadius ?? 40}
+                outerRadius={80}
+                paddingAngle={2}
+              >
+                {data.map((entry: any, i: number) => (
+                  <Cell
+                    key={i}
+                    fill={entry.color ?? COLORS[i % COLORS.length]}
+                  />
+                ))}
+              </Pie>
+              <Tooltip />
+            </RechartsPie>
+          </ResponsiveContainer>
+        </div>
+      );
+    },
+
+    BarChart: ({ props: rawProps }) => {
+      const props = rawProps as Record<string, any>;
+      const data: any[] = Array.isArray(props.data) ? props.data : [];
+      return (
+        <div style={{ width: "100%", height: 200 }}>
+          <ResponsiveContainer>
+            <RechartsBar data={data}>
+              <CartesianGrid strokeDasharray="3 3" stroke={c.divider} />
+              <XAxis dataKey="label" tick={{ fontSize: 11, fill: c.muted }} />
+              <YAxis tick={{ fontSize: 11, fill: c.muted }} />
+              <Tooltip />
+              <Bar
+                dataKey="value"
+                fill={props.color ?? "#3b82f6"}
+                radius={[4, 4, 0, 0]}
+              />
+            </RechartsBar>
+          </ResponsiveContainer>
+        </div>
+      );
+    },
+
+    Badge: ({ props: rawProps }) => {
+      const props = rawProps as Record<string, any>;
+      const variants: Record<string, { bg: string; color: string }> = {
+        success: { bg: "#dcfce7", color: "#166534" },
+        warning: { bg: "#fef3c7", color: "#92400e" },
+        error: { bg: "#fee2e2", color: "#991b1b" },
+        info: { bg: "#dbeafe", color: "#1e40af" },
+        neutral: { bg: "var(--muted)", color: c.cardFg },
+      };
+      const v = variants[props.variant ?? "neutral"] ?? variants.neutral;
+      return (
+        <span
+          style={{
+            display: "inline-block",
+            padding: "2px 8px",
+            borderRadius: "9999px",
+            fontSize: "0.7rem",
+            fontWeight: 500,
+            background: v.bg,
+            color: v.color,
+          }}
+        >
+          {props.text}
+        </span>
+      );
+    },
+
+    DataTable: ({ props: rawProps }) => {
+      const props = rawProps as Record<string, any>;
+      const cols: any[] = Array.isArray(props.columns) ? props.columns : [];
+      const rows: any[] = Array.isArray(props.rows) ? props.rows : [];
+      return (
+        <div style={{ overflowX: "auto", width: "100%" }}>
+          <table
+            style={{
+              width: "100%",
+              borderCollapse: "collapse",
+              fontSize: "0.8rem",
+            }}
+          >
+            <thead>
+              <tr>
+                {cols.map((col: any) => (
+                  <th
+                    key={col.key}
+                    style={{
+                      textAlign: "left",
+                      padding: "8px 12px",
+                      borderBottom: `2px solid ${c.border}`,
+                      color: c.muted,
+                      fontWeight: 600,
+                      fontSize: "0.7rem",
+                      textTransform: "uppercase",
+                      letterSpacing: "0.05em",
+                    }}
+                  >
+                    {col.label}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {rows.map((row: any, i: number) => (
+                <tr key={i} style={{ borderBottom: `1px solid ${c.divider}` }}>
+                  {cols.map((col: any) => (
+                    <td
+                      key={col.key}
+                      style={{ padding: "8px 12px", color: c.cardFg }}
+                    >
+                      {String(row[col.key] ?? "")}
+                    </td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      );
+    },
+
+    Button: ({ props, children }) => {
+      return (
+        <ActionButton label="Click" doneLabel="Done" action={props.action}>
+          {props.child ? children(props.child) : null}
+        </ActionButton>
+      );
+    },
+
+    FlightCard: ({ props: rawProps }) => {
+      // The binder resolves path bindings to strings at runtime.
+      const props = rawProps as Record<string, any>;
+      const statusColors: Record<string, string> = {
+        "On Time": "#22c55e",
+        Delayed: "#eab308",
+        Cancelled: "#ef4444",
+      };
+      const dotColor =
+        props.statusColor ?? statusColors[props.status] ?? "#22c55e";
+
+      return (
+        <div
+          style={{
+            border: `1px solid ${c.border}`,
+            borderRadius: "16px",
+            padding: "20px",
+            background: c.card,
+            color: c.cardFg,
+            minWidth: 260,
+            maxWidth: 340,
+            flex: "1 1 260px",
+            display: "flex",
+            flexDirection: "column",
+            gap: "12px",
+            boxShadow: c.shadow,
+          }}
+        >
+          {/* Header: airline + price */}
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+            }}
+          >
+            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+              <img
+                src={props.airlineLogo}
+                alt={props.airline}
+                style={{
+                  width: 28,
+                  height: 28,
+                  borderRadius: "50%",
+                  objectFit: "contain",
+                }}
+              />
+              <span style={{ fontWeight: 600, fontSize: "0.95rem" }}>
+                {props.airline}
+              </span>
+            </div>
+            <span style={{ fontWeight: 700, fontSize: "1.15rem" }}>
+              {props.price}
+            </span>
+          </div>
+
+          {/* Meta */}
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              fontSize: "0.8rem",
+              color: c.muted,
+            }}
+          >
+            <span>{props.flightNumber}</span>
+            <span>{props.date}</span>
+          </div>
+
+          <hr
+            style={{
+              border: "none",
+              borderTop: `1px solid ${c.divider}`,
+              margin: 0,
+            }}
+          />
+
+          {/* Times */}
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+            }}
+          >
+            <span style={{ fontWeight: 700, fontSize: "1.1rem" }}>
+              {props.departureTime}
+            </span>
+            <span style={{ fontSize: "0.75rem", color: c.muted }}>
+              {props.duration}
+            </span>
+            <span style={{ fontWeight: 700, fontSize: "1.1rem" }}>
+              {props.arrivalTime}
+            </span>
+          </div>
+
+          {/* Route */}
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              fontSize: "0.95rem",
+              fontWeight: 600,
+            }}
+          >
+            <span>{props.origin}</span>
+            <span style={{ color: c.muted }}>→</span>
+            <span>{props.destination}</span>
+          </div>
+
+          <div
+            style={{
+              marginTop: "auto",
+              display: "flex",
+              flexDirection: "column",
+              gap: "12px",
+            }}
+          >
+            <hr
+              style={{
+                border: "none",
+                borderTop: `1px solid ${c.divider}`,
+                margin: 0,
+              }}
+            />
+
+            {/* Status */}
+            <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+              <span
+                style={{
+                  width: 8,
+                  height: 8,
+                  borderRadius: "50%",
+                  background: dotColor,
+                  display: "inline-block",
+                }}
+              />
+              <span style={{ fontSize: "0.8rem", color: c.muted }}>
+                {props.status}
+              </span>
+            </div>
+
+            <ActionButton
+              label="Select"
+              doneLabel="Selected"
+              action={props.action}
+            />
+          </div>
+        </div>
+      );
+    },
+
+    ProjectCard: ({ props: rawProps }) => {
+      const props = rawProps as Record<string, any>;
+      const statusPillPalette: Record<
+        string,
+        { bg: string; color: string }
+      > = {
+        "On Track": { bg: "#dcfce7", color: "#166534" },
+        "At Risk": { bg: "#fef3c7", color: "#92400e" },
+        "Off Track": { bg: "#fee2e2", color: "#991b1b" },
+      };
+      const statusKey = String(props.status ?? "On Track");
+      const pill =
+        statusPillPalette[statusKey] ?? statusPillPalette["On Track"];
+      const pct = Math.max(0, Math.min(100, Number(props.percentComplete ?? 0)));
+      const counts = [
+        { label: "To Do", value: Number(props.todoCount ?? 0) },
+        { label: "In Progress", value: Number(props.inProgressCount ?? 0) },
+        { label: "In Review", value: Number(props.inReviewCount ?? 0) },
+        { label: "Done", value: Number(props.doneCount ?? 0) },
+      ];
+      return (
+        <div
+          style={{
+            border: `1px solid ${c.border}`,
+            borderRadius: 12,
+            padding: 20,
+            background: c.card,
+            color: c.cardFg,
+            boxShadow: c.shadow,
+            display: "flex",
+            flexDirection: "column",
+            gap: 12,
+            minWidth: 260,
+            flex: "1 1 260px",
+          }}
+        >
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "flex-start",
+              gap: 12,
+            }}
+          >
+            <span style={{ fontWeight: 600, fontSize: "1rem", lineHeight: 1.25 }}>
+              {props.name}
+            </span>
+            <span
+              style={{
+                display: "inline-block",
+                padding: "2px 8px",
+                borderRadius: 9999,
+                fontSize: "0.7rem",
+                fontWeight: 500,
+                background: pill.bg,
+                color: pill.color,
+                whiteSpace: "nowrap",
+              }}
+            >
+              {props.status}
+            </span>
+          </div>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              fontSize: "0.75rem",
+              color: c.muted,
+            }}
+          >
+            <span>{props.ownerName}</span>
+            <span>{props.sprintLabel}</span>
+          </div>
+          <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+            <div
+              style={{
+                width: "100%",
+                height: 8,
+                borderRadius: 9999,
+                background:
+                  "color-mix(in srgb, var(--primary) 18%, var(--card))",
+                overflow: "hidden",
+              }}
+            >
+              <div
+                style={{
+                  width: `${pct}%`,
+                  height: "100%",
+                  background: "var(--primary)",
+                  borderRadius: 9999,
+                  transition: "width 0.3s ease",
+                }}
+              />
+            </div>
+            <span style={{ fontSize: "0.7rem", color: c.muted }}>
+              {pct}% complete
+            </span>
+          </div>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              gap: 8,
+              borderTop: `1px solid ${c.divider}`,
+              paddingTop: 12,
+            }}
+          >
+            {counts.map((item) => (
+              <div
+                key={item.label}
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  flex: "1 1 0",
+                }}
+              >
+                <span
+                  style={{ fontSize: "1rem", fontWeight: 700, color: c.cardFg }}
+                >
+                  {item.value}
+                </span>
+                <span
+                  style={{
+                    fontSize: "0.65rem",
+                    color: c.muted,
+                    textTransform: "uppercase",
+                    letterSpacing: "0.04em",
+                  }}
+                >
+                  {item.label}
+                </span>
+              </div>
+            ))}
+          </div>
+          {props.action && (
+            <ActionButton
+              label="Open project"
+              doneLabel="Opened"
+              action={props.action}
+            />
+          )}
+        </div>
+      );
+    },
+
+    TaskCard: ({ props: rawProps }) => {
+      const props = rawProps as Record<string, any>;
+      return (
+        <div
+          style={{
+            border: `1px solid ${c.border}`,
+            borderRadius: 10,
+            padding: 12,
+            background: c.card,
+            color: c.cardFg,
+            display: "flex",
+            flexDirection: "column",
+            gap: 8,
+            minWidth: 140,
+            maxWidth: 220,
+          }}
+        >
+          <span
+            style={{
+              fontWeight: 600,
+              fontSize: "0.8rem",
+              lineHeight: 1.3,
+              color: c.cardFg,
+            }}
+          >
+            {props.title}
+          </span>
+          {props.projectLabel && (
+            <span
+              style={{
+                fontSize: "0.65rem",
+                color: c.muted,
+                textTransform: "uppercase",
+                letterSpacing: "0.04em",
+              }}
+            >
+              {props.projectLabel}
+            </span>
+          )}
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              gap: 6,
+            }}
+          >
+            <div
+              style={{ display: "flex", alignItems: "center", gap: 6, minWidth: 0 }}
+            >
+              <span
+                style={{
+                  width: 22,
+                  height: 22,
+                  borderRadius: "50%",
+                  background:
+                    "color-mix(in srgb, var(--primary) 22%, var(--card))",
+                  color: "var(--primary)",
+                  display: "inline-flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  fontSize: "0.65rem",
+                  fontWeight: 600,
+                  flexShrink: 0,
+                }}
+              >
+                {props.assigneeInitials}
+              </span>
+              <span
+                style={{
+                  fontSize: "0.7rem",
+                  color: c.muted,
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                  whiteSpace: "nowrap",
+                }}
+              >
+                {props.assigneeName}
+              </span>
+            </div>
+            <span
+              style={{
+                fontSize: "0.7rem",
+                color: c.muted,
+                fontWeight: 500,
+                whiteSpace: "nowrap",
+              }}
+            >
+              {props.pointsLabel}
+            </span>
+          </div>
+          <span style={{ fontSize: "0.65rem", color: c.muted }}>
+            {props.dueLabel}
+          </span>
+        </div>
+      );
+    },
+
+    KanbanColumn: ({ props: rawProps, children }) => {
+      // Cast widens DynString fields to string for JSX without altering
+      // the verbatim template-binding logic below.
+      const props = rawProps as Record<string, any>;
+      const items =
+        props.children &&
+        typeof props.children === "object" &&
+        "id" in props.children
+          ? [props.children]
+          : Array.isArray(props.children)
+            ? props.children
+            : [];
+      return (
+        <div
+          style={{
+            flex: "1 1 0",
+            minWidth: 220,
+            display: "flex",
+            flexDirection: "column",
+            gap: 12,
+            background: c.card,
+            border: `1px solid ${c.border}`,
+            borderRadius: 12,
+            padding: 16,
+          }}
+        >
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+            }}
+          >
+            <span
+              style={{ fontWeight: 600, fontSize: "0.85rem", color: c.cardFg }}
+            >
+              {props.statusLabel}
+            </span>
+            <span
+              style={{ fontSize: "0.75rem", color: c.muted, fontWeight: 500 }}
+            >
+              {props.count}
+            </span>
+          </div>
+          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+            {items.map((item: any, i: number) => {
+              if (typeof item === "string")
+                return (
+                  <React.Fragment key={`${item}-${i}`}>
+                    {children(item)}
+                  </React.Fragment>
+                );
+              if (item && typeof item === "object" && "id" in item)
+                return (
+                  <React.Fragment key={`${item.id}-${i}`}>
+                    {(children as any)(item.id, item.basePath)}
+                  </React.Fragment>
+                );
+              return null;
+            })}
+          </div>
+        </div>
+      );
+    },
+
+    SprintTimelineBar: ({ props: rawProps }) => {
+      const props = rawProps as Record<string, any>;
+      const pct = Math.max(0, Math.min(100, Number(props.percentComplete ?? 0)));
+      return (
+        <div
+          style={{
+            border: `1px solid ${c.border}`,
+            borderRadius: 12,
+            padding: 20,
+            background: c.card,
+            color: c.cardFg,
+            boxShadow: c.shadow,
+            display: "flex",
+            flexDirection: "column",
+            gap: 12,
+          }}
+        >
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              gap: 12,
+            }}
+          >
+            <span style={{ fontWeight: 600, fontSize: "0.95rem" }}>
+              {props.sprintName}
+            </span>
+            <span style={{ fontSize: "0.75rem", color: c.muted, fontWeight: 500 }}>
+              {props.status}
+            </span>
+          </div>
+          <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+            <div
+              style={{
+                width: "100%",
+                height: 10,
+                borderRadius: 9999,
+                background:
+                  "color-mix(in srgb, var(--primary) 18%, var(--card))",
+                overflow: "hidden",
+              }}
+            >
+              <div
+                style={{
+                  width: `${pct}%`,
+                  height: "100%",
+                  background: "var(--primary)",
+                  borderRadius: 9999,
+                  transition: "width 0.3s ease",
+                }}
+              />
+            </div>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                fontSize: "0.7rem",
+                color: c.muted,
+              }}
+            >
+              <span>{props.startLabel}</span>
+              <span style={{ fontWeight: 600, color: c.cardFg }}>{pct}%</span>
+              <span>{props.endLabel}</span>
+            </div>
+          </div>
+          <span style={{ fontSize: "0.75rem", color: c.muted }}>
+            {props.daysRemainingLabel}
+          </span>
+        </div>
+      );
+    },
+
+    MilestoneList: ({ props: rawProps }) => {
+      const props = rawProps as Record<string, any>;
+      const items: any[] = Array.isArray(props.milestones) ? props.milestones : [];
+      return (
+        <div
+          style={{
+            border: `1px solid ${c.border}`,
+            borderRadius: 12,
+            padding: 20,
+            background: c.card,
+            color: c.cardFg,
+            boxShadow: c.shadow,
+            display: "flex",
+            flexDirection: "column",
+            gap: 4,
+          }}
+        >
+          {items.map((m: any, i: number) => (
+            <div
+              key={`${m.title}-${i}`}
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: 8,
+                padding: "8px 0",
+                borderBottom:
+                  i < items.length - 1 ? `1px solid ${c.divider}` : "none",
+              }}
+            >
+              <span
+                style={{
+                  width: 20,
+                  height: 20,
+                  display: "inline-flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  borderRadius: "50%",
+                  background: m.done
+                    ? "color-mix(in srgb, #22c55e 15%, var(--card))"
+                    : "transparent",
+                  color: m.done ? "#059669" : c.muted,
+                  fontSize: "0.85rem",
+                  fontWeight: 700,
+                  border: m.done ? "none" : `1px solid ${c.border}`,
+                  flexShrink: 0,
+                }}
+              >
+                {m.done ? "✓" : "◯"}
+              </span>
+              <span
+                style={{
+                  fontSize: "0.85rem",
+                  color: m.done ? c.muted : c.cardFg,
+                  fontWeight: m.done ? 400 : 500,
+                  textDecoration: m.done ? "line-through" : "none",
+                  flex: "1 1 auto",
+                  minWidth: 0,
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                  whiteSpace: "nowrap",
+                }}
+              >
+                {m.title}
+              </span>
+              <span
+                style={{
+                  flex: "1 1 0",
+                  minWidth: 12,
+                  height: 1,
+                  borderBottom: `1px dotted ${c.border}`,
+                  alignSelf: "center",
+                  margin: "0 8px",
+                }}
+              />
+              <span
+                style={{
+                  fontSize: "0.75rem",
+                  color: c.muted,
+                  whiteSpace: "nowrap",
+                  flexShrink: 0,
+                }}
+              >
+                {m.dueLabel}
+              </span>
+            </div>
+          ))}
+        </div>
+      );
+    },
+
+    PersonAvatar: ({ props: rawProps }) => {
+      const props = rawProps as Record<string, any>;
+      return (
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: 10,
+            padding: "8px 12px",
+            border: `1px solid ${c.border}`,
+            borderRadius: 9999,
+            background: c.card,
+            color: c.cardFg,
+          }}
+        >
+          {props.avatarUrl ? (
+            <img
+              src={props.avatarUrl}
+              alt={props.name}
+              style={{
+                width: 28,
+                height: 28,
+                borderRadius: "50%",
+                objectFit: "cover",
+                flexShrink: 0,
+              }}
+            />
+          ) : (
+            <span
+              style={{
+                width: 28,
+                height: 28,
+                borderRadius: "50%",
+                background:
+                  "color-mix(in srgb, var(--primary) 22%, var(--card))",
+                color: "var(--primary)",
+                display: "inline-flex",
+                alignItems: "center",
+                justifyContent: "center",
+                fontSize: "0.7rem",
+                fontWeight: 600,
+                flexShrink: 0,
+              }}
+            >
+              {props.initials}
+            </span>
+          )}
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              minWidth: 0,
+              lineHeight: 1.2,
+            }}
+          >
+            <span
+              style={{
+                fontSize: "0.8rem",
+                fontWeight: 600,
+                color: c.cardFg,
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+                whiteSpace: "nowrap",
+              }}
+            >
+              {props.name}
+            </span>
+            <span
+              style={{
+                fontSize: "0.7rem",
+                color: c.muted,
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+                whiteSpace: "nowrap",
+              }}
+            >
+              {props.role}
+            </span>
+          </div>
+          {props.loadLabel && (
+            <span
+              style={{
+                marginLeft: "auto",
+                fontSize: "0.7rem",
+                color: c.muted,
+                fontWeight: 500,
+                whiteSpace: "nowrap",
+              }}
+            >
+              {props.loadLabel}
+            </span>
+          )}
+        </div>
+      );
+    },
+
+    RiskFlag: ({ props: rawProps }) => {
+      const props = rawProps as Record<string, any>;
+      const severityKey = String(props.severity ?? "low").toLowerCase();
+      const severityPalette: Record<
+        string,
+        { stripe: string; bg: string; color: string; label: string }
+      > = {
+        high: {
+          stripe: "#ef4444",
+          bg: "#fee2e2",
+          color: "#991b1b",
+          label: "High",
+        },
+        medium: {
+          stripe: "#f59e0b",
+          bg: "#fef3c7",
+          color: "#92400e",
+          label: "Medium",
+        },
+        low: {
+          stripe: "#3b82f6",
+          bg: "#dbeafe",
+          color: "#1e40af",
+          label: "Low",
+        },
+      };
+      const sev = severityPalette[severityKey] ?? severityPalette.low;
+      return (
+        <div
+          style={{
+            position: "relative",
+            border: `1px solid ${c.border}`,
+            borderLeft: `4px solid ${sev.stripe}`,
+            borderRadius: 12,
+            padding: "16px 16px 16px 20px",
+            background: c.card,
+            color: c.cardFg,
+            boxShadow: c.shadow,
+            display: "flex",
+            flexDirection: "column",
+            gap: 8,
+          }}
+        >
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "flex-start",
+              gap: 12,
+            }}
+          >
+            <span style={{ fontWeight: 600, fontSize: "0.9rem", lineHeight: 1.3 }}>
+              {props.title}
+            </span>
+            <span
+              style={{
+                display: "inline-block",
+                padding: "2px 8px",
+                borderRadius: 9999,
+                fontSize: "0.65rem",
+                fontWeight: 600,
+                background: sev.bg,
+                color: sev.color,
+                textTransform: "uppercase",
+                letterSpacing: "0.05em",
+                whiteSpace: "nowrap",
+              }}
+            >
+              {String(props.severity ?? sev.label)}
+            </span>
+          </div>
+          <div
+            style={{
+              display: "flex",
+              gap: 12,
+              fontSize: "0.75rem",
+              color: c.muted,
+              flexWrap: "wrap",
+            }}
+          >
+            <span>{props.ownerName}</span>
+            <span style={{ color: c.border }}>•</span>
+            <span>{props.projectLabel}</span>
+          </div>
+          <span style={{ fontSize: "0.8rem", color: c.cardFg, lineHeight: 1.4 }}>
+            {props.mitigation}
+          </span>
+        </div>
+      );
+    },
+
+    UpdateFeedItem: ({ props: rawProps }) => {
+      const props = rawProps as Record<string, any>;
+      return (
+        <div
+          style={{
+            display: "flex",
+            gap: 12,
+            padding: "12px 16px",
+            border: `1px solid ${c.border}`,
+            borderRadius: 12,
+            background: c.card,
+            color: c.cardFg,
+          }}
+        >
+          <span
+            style={{
+              width: 32,
+              height: 32,
+              borderRadius: "50%",
+              background:
+                "color-mix(in srgb, var(--primary) 22%, var(--card))",
+              color: "var(--primary)",
+              display: "inline-flex",
+              alignItems: "center",
+              justifyContent: "center",
+              fontSize: "0.75rem",
+              fontWeight: 600,
+              flexShrink: 0,
+            }}
+          >
+            {props.authorInitials}
+          </span>
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              gap: 4,
+              minWidth: 0,
+              flex: "1 1 auto",
+            }}
+          >
+            <div
+              style={{
+                display: "flex",
+                alignItems: "baseline",
+                gap: 8,
+                flexWrap: "wrap",
+                fontSize: "0.75rem",
+              }}
+            >
+              <span style={{ fontWeight: 600, color: c.cardFg }}>
+                {props.authorName}
+              </span>
+              <span style={{ color: c.muted }}>{props.dateLabel}</span>
+              <span
+                style={{
+                  marginLeft: "auto",
+                  color: c.muted,
+                  fontSize: "0.7rem",
+                  textTransform: "uppercase",
+                  letterSpacing: "0.04em",
+                  fontWeight: 500,
+                }}
+              >
+                {props.projectLabel}
+              </span>
+            </div>
+            <span
+              style={{
+                fontSize: "0.85rem",
+                color: c.cardFg,
+                lineHeight: 1.4,
+                whiteSpace: "pre-wrap",
+              }}
+            >
+              {props.body}
+            </span>
+          </div>
+        </div>
+      );
+    },
+
+    Paragraph: ({ props: rawProps }) => {
+      const props = rawProps as Record<string, any>;
+      const tone = String(props.tone ?? "default");
+      const toneStyle: React.CSSProperties =
+        tone === "muted"
+          ? { color: c.muted, fontWeight: 400 }
+          : tone === "strong"
+            ? { color: c.cardFg, fontWeight: 600 }
+            : { color: c.cardFg, fontWeight: 400 };
+      return (
+        <p
+          style={{
+            margin: 0,
+            fontSize: "0.9rem",
+            lineHeight: 1.55,
+            ...toneStyle,
+          }}
+        >
+          {props.text}
+        </p>
+      );
+    },
+  };
+
+// ─── Assembled Catalog ───────────────────────────────────────────────
+
+export const demonstrationCatalog = createCatalog(
+  demonstrationCatalogDefinitions,
+  demonstrationCatalogRenderers,
+  {
+    catalogId: "copilotkit://app-dashboard-catalog",
+  },
+);

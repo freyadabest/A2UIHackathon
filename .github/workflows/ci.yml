@@ -1,0 +1,137 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+# Cancel in-flight runs of this workflow on the same ref to save CI minutes.
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  smoke:
+    name: Smoke + verify pins + vendor build
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+          run_install: false
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v3
+        with:
+          version: "latest"
+
+      - name: pnpm install (frozen lockfile)
+        run: pnpm install --frozen-lockfile
+
+      - name: Install Python agent dependencies
+        working-directory: agent
+        run: uv sync --frozen
+
+      # ---- Pin drift gate ----
+      # Workstream D delivers `pnpm verify-pins`. Until it lands, this step is a
+      # soft check — `|| true` keeps CI green on branches that pre-date D. Once
+      # D's script is in main, remove the `|| true` to make this hard-fail.
+      - name: Verify pins (FROZEN.md)
+        run: pnpm verify-pins || echo "::warning::pnpm verify-pins not yet wired up (Workstream D in flight)"
+
+      # ---- Composite smoke gate ----
+      # `pnpm smoke` is the load-bearing gate that bundles:
+      #   - widget JSON validation
+      #   - verify-pins (re-runs the check above)
+      #   - OFFLINE=1 path smoke
+      #   - canned prompt against the running stack
+      # Workstream D delivers this script. Same soft-fail story as verify-pins.
+      - name: pnpm smoke
+        run: pnpm smoke || echo "::warning::pnpm smoke not yet wired up (Workstream D in flight)"
+
+      # ---- Verify the vendored fallback builds ----
+      # Defensive insurance: if upstream cuts a breaking 1.56.x patch between
+      # fork date and event day, every team flips ONE line in package.json to
+      # `file:vendor/copilotkit-a2ui-renderer`. This step proves that swap
+      # actually builds against the rest of the app.
+      #
+      # Procedure documented in vendor/README.md.
+      - name: "Verify vendor build (swap a2ui-renderer to file: spec)"
+        run: |
+          set -euo pipefail
+
+          echo "Backing up package.json + pnpm-lock.yaml ..."
+          cp package.json package.json.bak
+          cp pnpm-lock.yaml pnpm-lock.yaml.bak
+
+          echo "Rewriting @copilotkit/a2ui-renderer to file:vendor/copilotkit-a2ui-renderer ..."
+          # node one-liner: surgical JSON edit, keeps formatting close enough.
+          node -e '
+            const fs = require("fs");
+            const pkg = JSON.parse(fs.readFileSync("package.json", "utf8"));
+            pkg.dependencies["@copilotkit/a2ui-renderer"] = "file:vendor/copilotkit-a2ui-renderer";
+            fs.writeFileSync("package.json", JSON.stringify(pkg, null, 2) + "\n");
+          '
+
+          echo "Reinstalling with --no-frozen-lockfile (file: swap is expected lockfile drift) ..."
+          pnpm install --no-frozen-lockfile
+
+          echo "Building the app with the vendored renderer ..."
+          pnpm build
+
+          echo "Restoring original package.json + pnpm-lock.yaml ..."
+          mv package.json.bak package.json
+          mv pnpm-lock.yaml.bak pnpm-lock.yaml
+
+          echo "Vendor swap build: OK"
+
+      # ---- Re-run the Gemini model probe ----
+      # Catches upstream changes: a model 404'ing or langchain-openai gaining
+      # thought_signature passthrough (which would unblock 3.5 Flash).
+      # If GEMINI_API_KEY is not configured on this fork, skip with a warning
+      # rather than failing — forks without the secret should still get a
+      # green CI for the rest of the gates.
+      #
+      # NOTE: secrets cannot be evaluated in `if:` directly, so we hoist into
+      # an output via a guard step, then gate the real step on that output.
+      - name: Detect GEMINI_API_KEY
+        id: gemini_key
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: |
+          if [[ -n "$GEMINI_API_KEY" ]]; then
+            echo "available=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "available=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Re-run Gemini model probe
+        if: steps.gemini_key.outputs.available == 'true'
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: |
+          chmod +x ./scripts/probe-gemini.sh
+          ./scripts/probe-gemini.sh
+
+      - name: Gemini probe skipped (no key)
+        if: steps.gemini_key.outputs.available == 'false'
+        run: |
+          echo "::warning::GEMINI_API_KEY not configured on this fork — skipping the model probe step. The nightly-gemini-probe workflow will catch upstream changes if configured."

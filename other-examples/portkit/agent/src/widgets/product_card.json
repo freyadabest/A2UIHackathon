@@ -1,0 +1,91 @@
+{
+  "id": "product-card",
+  "name": "ProductCard",
+  "description": "Shopping product search result card. Built from base v0.9 catalog primitives (Card, Column, Row, Image, Text, Button). Shows product image, name, price, rating, category, and an 'Add to cart' action.",
+  "catalogId": "https://a2ui.org/specification/v0_9/basic_catalog.json",
+  "pythonTool": "agent/src/domains/shopping/tools.py:search_products",
+  "schema": [
+    {
+      "id": "root",
+      "component": "List",
+      "direction": "horizontal",
+      "gap": 16,
+      "children": { "componentId": "product-card", "path": "/products" }
+    },
+    {
+      "id": "product-card",
+      "component": "Card",
+      "children": ["product-card-col"]
+    },
+    {
+      "id": "product-card-col",
+      "component": "Column",
+      "gap": 12,
+      "children": [
+        "product-card-image",
+        "product-card-name",
+        "product-card-price",
+        "product-card-meta",
+        "product-card-button"
+      ]
+    },
+    {
+      "id": "product-card-image",
+      "component": "Image",
+      "variant": "smallFeature",
+      "src": { "path": "imageUrl" },
+      "alt": { "path": "name" }
+    },
+    {
+      "id": "product-card-name",
+      "component": "Text",
+      "variant": "h3",
+      "text": { "path": "name" }
+    },
+    {
+      "id": "product-card-price",
+      "component": "Text",
+      "variant": "h2",
+      "text": { "path": "price" }
+    },
+    {
+      "id": "product-card-meta",
+      "component": "Row",
+      "justify": "spaceBetween",
+      "children": ["product-card-rating", "product-card-category"]
+    },
+    {
+      "id": "product-card-rating",
+      "component": "Text",
+      "variant": "caption",
+      "text": { "path": "rating" }
+    },
+    {
+      "id": "product-card-category",
+      "component": "Text",
+      "variant": "caption",
+      "text": { "path": "category" }
+    },
+    {
+      "id": "product-card-button",
+      "component": "Button",
+      "variant": "primary",
+      "children": ["product-card-button-text"],
+      "action": {
+        "event": {
+          "name": "add_to_cart",
+          "context": {
+            "productId": { "path": "id" },
+            "name": { "path": "name" },
+            "price": { "path": "price" }
+          }
+        }
+      }
+    },
+    {
+      "id": "product-card-button-text",
+      "component": "Text",
+      "text": "Add to cart"
+    }
+  ]
+}

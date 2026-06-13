@@ -1,0 +1,235 @@
+/* CopilotKit brand fonts (Plus Jakarta Sans + Spline Sans Mono) load via
+   next/font/google in src/app/layout.tsx and are exposed as
+   --font-body-loader / --font-code-loader. No @import url() here: Tailwind v4
+   rejects it and next/font avoids the flash of unstyled text. */
+
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+:root {
+  /* Page background — canonical CopilotKit lavender-gray (was #ffffff). */
+  --background: #dedee9;
+  --foreground: #010507;
+
+  /* Semantic tokens — CopilotKit brand */
+  --card: #ffffff;
+  --card-foreground: #010507;
+  --primary: #010507;
+  --primary-foreground: #ffffff;
+  --secondary: #ededf5;
+  --secondary-foreground: #010507;
+  --muted: #ededf5;
+  --muted-foreground: #57575b;
+  --accent: #eee6fe;
+  --accent-foreground: #010507;
+  --destructive: #fa5f67;
+  --destructive-foreground: #ffffff;
+  --border: #dbdbe5;
+  --input: #dbdbe5;
+  --ring: #bec2ff;
+
+  /* Chart tokens */
+  --chart-tooltip-bg: #ffffff;
+  --chart-tooltip-border: #dbdbe5;
+  --chart-axis: #57575b;
+
+  --radius: 0.5rem; /* 8px — canonical card/sidebar radius (was 0.75rem/12px) */
+
+  /* Override CopilotKit font */
+  --cpk-default-font-family: var(--font-body);
+
+  /* Fonts — next/font handles (set on <html> in layout.tsx) come first;
+     literal family names remain as graceful fallbacks. */
+  --font-body:
+    var(--font-body-loader), "Plus Jakarta Sans", "DM Sans", "Segoe UI",
+    sans-serif;
+  --font-code:
+    var(--font-code-loader), "Spline Sans Mono", "SFMono-Regular", Menlo,
+    Monaco, Consolas, monospace;
+
+  /* Brand accent colors */
+  --cpk-mint-400: #85ecce;
+  --cpk-mint-800: #189370;
+  --cpk-lilac-400: #bec2ff;
+  --cpk-orange-400: #ffac4d;
+  --cpk-yellow-400: #fff388;
+  --cpk-ambient-gradient: linear-gradient(
+    90deg,
+    #bec2ff 0%,
+    #85ecce 45.673%,
+    #ffac4d 100%
+  );
+
+  /* Surfaces (B1) — lifted from cpk-project-management */
+  --surface-main: #dedee9;
+  --surface-container: #ffffff;
+  --surface-background: #dbdbe5;
+
+  /* Translucent glass layers (canonical) — frosted sidebar/chat panel that
+     lets the blur circles + lavender page show through. */
+  --white-30: rgba(255, 255, 255, 0.3); /* cooler chat-panel glass */
+  --white-50: rgba(255, 255, 255, 0.5);
+  --white-70: rgba(255, 255, 255, 0.7);
+  --white-65: rgba(255, 255, 255, 0.65);
+
+  /* Text (B1) */
+  --text-primary: #010507;
+  --text-secondary: #57575b;
+  --text-disabled: #838389;
+
+  /* Borders (B1) */
+  --border-container: #dbdbe5;
+  --border-default: #ffffff;
+
+  /* Radius scale (B1) */
+  --radius-xs: 4px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-full: 9999px;
+
+  /* Elevation (B1) */
+  --elevation-sm: 0px 1px 3px rgba(1, 5, 7, 0.08);
+  --elevation-md: 0px 4px 6px rgba(1, 5, 7, 0.08);
+  --elevation-lg: 0px 10px 15px rgba(1, 5, 7, 0.08);
+  --elevation-xl: 0px 20px 25px rgba(1, 5, 7, 0.08);
+
+  /* Blur backdrop tints — consumed by BackgroundBlurCircles. Canonical washes:
+     softer alphas, neutral grey/off-white dominate, subtle warm orange/yellow. */
+  --cpk-blur-lilac: rgba(190, 194, 255, 0.3);
+  --cpk-blur-orange: rgba(255, 172, 77, 0.2);
+  --cpk-blur-yellow: rgba(255, 243, 136, 0.3);
+  --cpk-blur-grey: rgba(201, 201, 218, 0.45);
+  --cpk-blur-offwhite: rgba(243, 243, 252, 0.55);
+}
+
+:root.dark,
+.dark {
+  --background: #010507;
+  --foreground: #ffffff;
+
+  --card: #191a1e;
+  --card-foreground: #ffffff;
+  --primary: #ffffff;
+  --primary-foreground: #010507;
+  --secondary: #242529;
+  --secondary-foreground: #ffffff;
+  --muted: #242529;
+  --muted-foreground: #adadb2;
+  --accent: #303136;
+  --accent-foreground: #ffffff;
+  --destructive: #fa5f67;
+  --destructive-foreground: #ffffff;
+  --border: #303136;
+  --input: #303136;
+  --ring: #bec2ff;
+
+  --chart-tooltip-bg: #191a1e;
+  --chart-tooltip-border: #303136;
+  --chart-axis: #adadb2;
+
+  /* Surfaces (B1) — dark */
+  --surface-main: #1b1c20;
+  --surface-container: rgba(25, 26, 30, 0.7);
+  --surface-background: #101114;
+
+  /* Text (B1) — dark */
+  --text-primary: #ffffff;
+  --text-secondary: #adadb2;
+  --text-disabled: #6b6b70;
+
+  /* Borders (B1) — dark */
+  --border-container: #303136;
+  --border-default: rgba(255, 255, 255, 0.08);
+
+  /* Elevation (B1) — dark (deeper shadow for dark backgrounds) */
+  --elevation-sm: 0px 1px 3px rgba(0, 0, 0, 0.4);
+  --elevation-md: 0px 4px 6px rgba(0, 0, 0, 0.4);
+  --elevation-lg: 0px 10px 15px rgba(0, 0, 0, 0.4);
+  --elevation-xl: 0px 20px 25px rgba(0, 0, 0, 0.4);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-body);
+}
+
+body,
+html {
+  height: 100%;
+}
+
+/*
+ * Showcase highlight for suggestion pills.
+ * Applied via className in use-example-suggestions.tsx when showcase.json
+ * is set to a non-default mode (e.g. "a2ui", "opengenui"). Uses CopilotKit
+ * brand colors with a subtle tinted background.
+ * Add new showcase variants here following the same pattern.
+ */
+[data-copilotkit] button[data-slot="suggestion-pill"].a2ui-highlight {
+  border-color: var(--cpk-lilac-400);
+  background: color-mix(in srgb, var(--cpk-lilac-400) 15%, var(--background));
+}
+
+[data-copilotkit] button[data-slot="suggestion-pill"].opengenui-highlight {
+  border-color: var(--cpk-mint-400);
+  background: color-mix(in srgb, var(--cpk-mint-400) 15%, var(--background));
+}
+
+/* ─── CopilotKit chat framework workarounds (FROZEN at 1.56.5) ───
+ *
+ * Targets the chat DOM shipped by @copilotkit/react-core/dist/v2.
+ * Verified selectors in the bundled output:
+ *   - Outer chat:    [data-testid="copilot-chat"]  + .copilotKitChat
+ *   - Input overlay: [data-testid="copilot-input-overlay"]   (pointer-events:none parent)
+ *   - Input pill:    [data-testid="copilot-chat-input"] + .copilotKitInput
+ *   - Sidebar:       [data-testid="copilot-sidebar"]  + .copilotKitSidebar  + [data-copilot-sidebar]
+ *   - Popup:         [data-testid="copilot-popup"]    + .copilotKitPopup    + [data-copilot-popup]
+ *   - Sidebar inner: [data-sidebar-chat]   Popup inner: [data-popup-chat]
+ * The Disclaimer renders as a sibling of the input pill inside the input
+ * overlay with no stable hook of its own — we reach it via the overlay.
+ */
+
+/* (1) Disclaimer slot interactive content unclickable.
+ *     The input overlay sets cpk:pointer-events-none on its parent and
+ *     only re-enables it on the input pill wrapper, leaving the
+ *     disclaimer (and any interactive children) unclickable. Re-enable
+ *     pointer events on every direct child of the input overlay so the
+ *     disclaimer (and any custom slots rendered alongside it) work. */
+[data-copilotkit] [data-testid="copilot-input-overlay"] > * {
+  pointer-events: auto;
+}
+[data-copilotkit] [data-testid="copilot-input-overlay"] > *:not(:first-child),
+[data-copilotkit] [data-testid="copilot-chat-input"] ~ * {
+  position: relative;
+  z-index: 1;
+}
+
+/* (2) No default cushion below chat input.
+ *     The input pill butts the bottom edge of its container in popup
+ *     and sidebar variants. Add a 12px cushion at the pill wrapper
+ *     level so the layout breathes regardless of disclaimer presence. */
+[data-copilotkit] [data-testid="copilot-chat-input"],
+[data-copilotkit] .copilotKitInput {
+  margin-bottom: 12px;
+}
+
+/* (3) Opaque background on every internal chat element.
+ *     CopilotKit's Sidebar (aside) and Popup (div) wrappers paint a
+ *     solid bg-background, and that token is inherited downwards
+ *     because nothing else specifies a background. Force the inner
+ *     chat container and its descendants to transparent so the frosted
+ *     backdrop (BackgroundBlurCircles, B2) can show through.
+ *     We deliberately leave the outer .copilotKitSidebar / .copilotKitPopup
+ *     wrappers alone — they are the chat "frame" and should keep their
+ *     own background; only the chat-content surface is clarified. */
+[data-copilotkit] [data-sidebar-chat],
+[data-copilotkit] [data-popup-chat],
+[data-copilotkit] [data-testid="copilot-chat"],
+[data-copilotkit] .copilotKitChat,
+[data-copilotkit] [data-testid="copilot-chat"] > *,
+[data-copilotkit] .copilotKitChat > * {
+  background: transparent;
+}
