@@ -6,6 +6,14 @@ Built on the [CopilotKit](https://copilotkit.ai) × [A2UI](https://a2ui.org/) st
 
 ---
 
+## Demo
+
+<video src="https://github.com/freyadabest/A2UIHackathon/raw/main/Vantage%20Demo.mp4" controls muted loop width="100%"></video>
+
+> If the player doesn't load inline, [watch `Vantage Demo.mp4`](Vantage%20Demo.mp4).
+
+---
+
 ## How it works
 
 1. You describe an area + business in chat
@@ -47,7 +55,7 @@ Open `http://localhost:3000`.
 ### Try it
 
 1. Click **"Run a market scan"** on the landing page → navigates to `/fixed`
-2. Type: *"I want to open a Pilates studio in Shoreditch"*
+2. Click one of the **example-question pills** (e.g. *"Pilates studio in Shoreditch"*) or type your own area + business
 3. The dashboard appears: KPI cards, demand curve, service mix donut, competitor table, scope chips
 4. Click a scope chip (e.g. **"Hoxton"**) → dashboard re-renders with data for that area
 
@@ -57,7 +65,7 @@ Open `http://localhost:3000`.
 
 ```
 ├── src/                        # Next.js frontend
-│   ├── app/(pdf)/              # Vantage AI routes (/, /fixed, /dynamic, /catalog)
+│   ├── app/(pdf)/              # Vantage AI routes (/, /fixed, /catalog)
 │   ├── a2ui/                   # A2UI catalog (21 components), theme, surface-bus
 │   ├── components/             # React: Brand, SurfaceCanvas, Split, etc.
 │   ├── hooks/                  # useTheme, etc.
