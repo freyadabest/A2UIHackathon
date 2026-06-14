@@ -9,6 +9,7 @@ import {
 import { useAgent } from "@copilotkit/react-core/v2";
 import { catalog } from "@/a2ui/catalog";
 import { surfaceBus } from "@/a2ui/surface-bus";
+import { printElementToPdf } from "@/lib/report-pdf";
 
 /* The big workspace pane. A page-level A2UIProvider subscribes to the
  * surface bus so any surface produced by chat renders here at canvas size.
@@ -81,6 +82,7 @@ function CanvasInner({
   const [surfaceId, setSurfaceId] = useState<string | null>(null);
   const seenRef = useRef(0);
   const createdSurfacesRef = useRef<Set<string>>(new Set());
+  const surfaceRef = useRef<HTMLDivElement>(null);
 
   /* The MessageProcessor THROWS on duplicate createSurface. Each agent call
    * to render_dashboard emits a fresh createSurface + updateComponents +
@@ -146,7 +148,32 @@ function CanvasInner({
 
   return (
     <div className="h-full overflow-y-auto">
-      <div className="a2ui-surface p-6 md:p-8">
+      <div className="sticky top-0 z-10 flex justify-end px-6 md:px-8 pt-4 pb-2 bg-[color-mix(in_oklab,var(--bg)_82%,transparent)] backdrop-blur-sm">
+        <button
+          type="button"
+          onClick={() => printElementToPdf(surfaceRef.current)}
+          title="Download this dashboard as a PDF"
+          className="mono inline-flex items-center gap-1.5 rounded-full border border-[var(--line)] bg-[var(--surface)] px-3.5 py-1.5 text-[11px] uppercase tracking-[0.12em] text-[var(--ink)] shadow-sm transition hover:bg-[color-mix(in_oklab,var(--blush)_22%,var(--surface))] hover:border-[color-mix(in_oklab,var(--blush)_40%,var(--line))]"
+        >
+          <svg
+            width="13"
+            height="13"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            aria-hidden
+          >
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+            <polyline points="7 10 12 15 17 10" />
+            <line x1="12" y1="15" x2="12" y2="3" />
+          </svg>
+          Download PDF
+        </button>
+      </div>
+      <div ref={surfaceRef} className="a2ui-surface px-6 md:px-8 pb-8 pt-2">
         <A2UIRenderer surfaceId={surfaceId} />
       </div>
     </div>
